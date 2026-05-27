@@ -264,7 +264,6 @@ const TypingBox = () => {
           dailyMode={dailyMode}
           setDailyMode={setDailyMode}
           theme={theme}
-          dailyChallengeTitle={dailyChallengeTitle}
         />
 
         <CustomTextBox

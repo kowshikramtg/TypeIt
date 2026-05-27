@@ -1,16 +1,27 @@
 type DailyChallengeProps = {
   dailyMode: boolean;
-  setDailyMode: React.Dispatch<React.SetStateAction<boolean>>;
+  setDailyMode: React.Dispatch<
+    React.SetStateAction<boolean>
+  >;
   theme: any;
-  dailyChallengeTitle: string;
 };
 
 const DailyChallenge = ({
   dailyMode,
   setDailyMode,
   theme,
-  dailyChallengeTitle,
 }: DailyChallengeProps) => {
+  const { challenge, loading } =
+    useDailyChallenge();
+
+  if (loading) {
+    return (
+      <div className="text-zinc-500">
+        Loading challenge...
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col items-center gap-4">
       <button
@@ -23,7 +34,11 @@ const DailyChallenge = ({
           cursor-pointer
           font-mono
           text-lg
-          ${dailyMode ? theme.accent : "text-gray-600"}
+          ${
+            dailyMode
+              ? theme.accent
+              : "text-gray-600"
+          }
         `}
       >
         daily
@@ -39,7 +54,7 @@ const DailyChallenge = ({
             ${theme.accent}
           `}
         >
-          daily challenge: {dailyChallengeTitle}
+          daily challenge: {challenge?.text}
         </div>
       )}
     </div>
