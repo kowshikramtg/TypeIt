@@ -6,12 +6,22 @@ const useLocalStorage = <T>(
 ) => {
   const [storedValue, setStoredValue] =
     useState<T>(() => {
-      const item =
-        localStorage.getItem(key);
+      try {
+        const item =
+          localStorage.getItem(key);
 
-      return item
-        ? JSON.parse(item)
-        : initialValue;
+        if (!item) {
+          return initialValue;
+        }
+
+        return JSON.parse(item);
+      } catch {
+        return (
+          localStorage.getItem(
+            key
+          ) as T
+        ) || initialValue;
+      }
     });
 
   useEffect(() => {
