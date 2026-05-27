@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { useAuth } from "./useAuth";
+import useAuth from "./useAuth";
 import { getUserActivity } from "../firebase/streak";
 
 import {

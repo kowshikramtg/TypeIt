@@ -1,25 +1,31 @@
 import {
   collection,
-  getDocs,
   limit,
+  onSnapshot,
   orderBy,
   query,
 } from "firebase/firestore";
 
 import { db } from "./config";
-import { Score } from "../types/score";
+import type { Score } from "../types/score";
 
-export const getTopScores = async (): Promise<Score[]> => {
+export const subscribeToLeaderboard = (
+  callback: (scores: Score[]) => void
+) => {
   const q = query(
     collection(db, "scores"),
     orderBy("wpm", "desc"),
     limit(20)
   );
 
-  const snapshot = await getDocs(q);
+  return onSnapshot(q, (snapshot) => {
+    const scores = snapshot.docs.map(
+      (doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      })
+    ) as Score[];
 
-  return snapshot.docs.map((doc) => ({
-    id: doc.id,
-    ...doc.data(),
-  })) as Score[];
+    callback(scores);
+  });
 };

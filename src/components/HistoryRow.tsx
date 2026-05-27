@@ -1,4 +1,4 @@
-import { Score } from "../types/score";
+import type { Score } from "../types/score";
 
 type Props = {
   score: Score;

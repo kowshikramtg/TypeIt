@@ -1,3 +1,5 @@
+import useDailyChallenge from "../hooks/useDailyChallenge";
+
 type DailyChallengeProps = {
   dailyMode: boolean;
   setDailyMode: React.Dispatch<

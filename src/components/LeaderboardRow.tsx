@@ -1,4 +1,5 @@
-import { Score } from "../types/score";
+import type { Score } from "../types/score";
+import { motion } from "framer-motion";
 
 type Props = {
   score: Score;
@@ -7,7 +8,13 @@ type Props = {
 
 const LeaderboardRow = ({ score, rank }: Props) => {
   return (
-    <div className="flex items-center justify-between py-3 border-b border-white/5">
+    <motion.div
+    layout
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25 }}
+      className="flex items-center justify-between py-3 border-b border-white/5"
+    >
       <div className="flex items-center gap-3">
         <span className="text-zinc-500 w-6">
           #{rank}
@@ -33,7 +40,7 @@ const LeaderboardRow = ({ score, rank }: Props) => {
           {score.accuracy}%
         </span>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

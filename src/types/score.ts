@@ -11,3 +11,4 @@ export interface Score {
 
   createdAt: any;
 }
+// export interface Score

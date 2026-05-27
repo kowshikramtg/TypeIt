@@ -6,7 +6,7 @@ import {
 } from "firebase/auth";
 
 
-import app from "./config";
+import { app } from "./config";
 
 const auth = getAuth(app);
 

@@ -1,10 +1,7 @@
-import TypingBox from './components/TypingBox'
+import Home from "./pages/Home";
+
 function App() {
-  return (
-    <div className="min-h-screen bg-black text-white">
-      <TypingBox />
-    </div>
-  )
+  return <Home />;
 }
 
-export default App
+export default App;

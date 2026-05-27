@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { getUserScores } from "../firebase/userStats";
-import { useAuth } from "./useAuth";
+import useAuth from "./useAuth";
 
 const useUserStats = () => {
   const { user } = useAuth();

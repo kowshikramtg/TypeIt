@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import { getDailyChallenge } from "../firebase/dailyChallenge";
 
-import { Challenge } from "../types/challenge";
+import type { Challenge } from "../types/challenge";
 
 const useDailyChallenge = () => {
   const [challenge, setChallenge] =

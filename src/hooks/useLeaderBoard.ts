@@ -1,24 +1,25 @@
 import { useEffect, useState } from "react";
-import { getTopScores } from "../firebase/leaderboard";
-import { Score } from "../types/score";
+
+import type { Score } from "../types/score";
+
+import { subscribeToLeaderboard } from "../firebase/leaderboard";
 
 const useLeaderboard = () => {
-  const [scores, setScores] = useState<Score[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [scores, setScores] = useState<
+    Score[]
+  >([]);
+
+  const [loading, setLoading] =
+    useState(true);
 
   useEffect(() => {
-    const fetchScores = async () => {
-      try {
-        const data = await getTopScores();
+    const unsubscribe =
+      subscribeToLeaderboard((data) => {
         setScores(data);
-      } catch (err) {
-        console.error(err);
-      } finally {
         setLoading(false);
-      }
-    };
+      });
 
-    fetchScores();
+    return () => unsubscribe();
   }, []);
 
   return {

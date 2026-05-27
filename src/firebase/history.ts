@@ -8,7 +8,7 @@ import {
 } from "firebase/firestore";
 
 import { db } from "./config";
-import { Score } from "../types/score";
+import type { Score } from "../types/score";
 
 export const getTypingHistory = async (
   uid: string

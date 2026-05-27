@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
-import { Score } from "../types/score";
-import { useAuth } from "./useAuth";
+import type { Score } from "../types/score";
+import  useAuth from "./useAuth";
 import { getTypingHistory } from "../firebase/history";
 
 const useTypingHistory = () => {
