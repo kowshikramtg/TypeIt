@@ -24,7 +24,43 @@ const themes = {
     accent: "text-green-400",
     caret: "bg-green-400",
     active: "bg-green-950"
-  }
-}
+  },
 
-export default themes
+  dracula: {
+    background: "bg-[#282a36]",
+    text: "text-[#f8f8f2]",
+    sub: "text-[#6272a4]",
+    accent: "text-[#bd93f9]",
+    caret: "bg-[#bd93f9]",
+    active: "bg-[#44475a]"
+  },
+
+  tokyo: {
+    background: "bg-[#1a1b26]",
+    text: "text-[#c0caf5]",
+    sub: "text-[#565f89]",
+    accent: "text-[#7aa2f7]",
+    caret: "bg-[#7aa2f7]",
+    active: "bg-[#24283b]"
+  },
+
+  gruvbox: {
+    background: "bg-[#282828]",
+    text: "text-[#ebdbb2]",
+    sub: "text-[#928374]",
+    accent: "text-[#fabd2f]",
+    caret: "bg-[#fabd2f]",
+    active: "bg-[#3c3836]"
+  },
+
+  catppuccin: {
+    background: "bg-[#1e1e2e]",
+    text: "text-[#cdd6f4]",
+    sub: "text-[#6c7086]",
+    accent: "text-[#f5c2e7]",
+    caret: "bg-[#f5c2e7]",
+    active: "bg-[#313244]"
+  }
+};
+
+export default themes;

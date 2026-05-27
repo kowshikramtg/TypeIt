@@ -1,70 +1,123 @@
 import { useEffect, useRef, useState } from "react";
-import generateWords from "../utils/generateWords";
-import themes from "../data/theme";
+
 import { motion } from "framer-motion";
-import codeSnippets from "../data/codeSnippets";
+
+import themes from "../data/theme";
+
+import ThemeSelector from "./ThemeSelector";
+import TimerSelector from "./TimerSelector";
+import ModeSelector from "./ModeSelector";
+import CustomTextBox from "./CustomTextBox";
+import DailyChallenge from "./DailyChallenge";
+import StatsHeader from "./StatsHeader";
+import TypingArea from "./TypingArea";
+import ResultsCard from "./ResultsCard";
+
+import useTyping from "../hooks/useTyping";
+import useTimer from "../hooks/useTimer";
+import useCaret from "../hooks/useCaret";
+import useLocalStorage from "../hooks/useLocalStorage";
+import useTest from "../hooks/useTest";
 
 const TypingBox = () => {
-  const [words, setWords] = useState("");
-  const [input, setInput] = useState("");
-  const [testTime, setTestTime] = useState(30);
-  const [timeLeft, setTimeLeft] = useState(testTime);
-  const [isTyping, setIsTyping] = useState(false);
-  const [testCompleted, setTestCompleted] = useState(false);
-  const [mistakes, setMistakes] = useState(0);
-  const [theme, setTheme] = useState(themes.default);
-  const [bestWpm, setBestWpm] = useState(0);
-  const [caretPosition, setCaretPosition] = useState({ top: 0, left: 0 });
+  // THEME
+  const [themeName, setThemeName] = useLocalStorage("typeit-theme", "default");
 
-  //   TYPING MODE
+  const [theme, setTheme] = useState(themes[themeName as keyof typeof themes]);
+
+  // WORDS
+  const [words, setWords] = useState("");
+
+  // TEST
+  const [testCompleted, setTestCompleted] = useState(false);
+
+  // BEST WPM
+  const [bestWpm, setBestWpm] = useLocalStorage("best-wpm", 0);
+
+  // CUSTOM TEXT
+  const [customText, setCustomText] = useState("");
+
+  const [useCustomText, setUseCustomText] = useState(false);
+
+  const [isCustomInputFocused, setIsCustomInputFocused] = useState(false);
+
+  const [showCustomTextBox, setShowCustomTextBox] = useState(false);
+
+  // MODE
   const [mode, setMode] = useState<"words" | "code">("words");
 
+  // DAILY
+  const [dailyMode, setDailyMode] = useState(false);
+
+  const [dailyChallengeTitle, setDailyChallengeTitle] = useState("");
+
+  // INPUT REF
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // CURRENT CHARACTER INDEX
-  const currentIndex = input.length;
-
-  const charactersTyped = input.length;
-
-  // CURRENT WORD INDEX
-  const currentWordIndex =
-    words.substring(0, currentIndex).split(" ").length - 1;
-
-  // CHAR Referecnce
+  // CHAR REFS
   const charRefs = useRef<(HTMLSpanElement | null)[]>([]);
 
-  //   Continaer Ref for future use (like auto scroll)
+  // CONTAINER REF
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // STATS
-  const correctChars = input
-    .split("")
-    .filter((char, index) => char === words[index]).length;
+  // TIMER
+  const {
+    testTime,
+    setTestTime,
 
-  const wordsTyped = correctChars / 5;
+    timeLeft,
+    setTimeLeft,
+  } = useTimer({
+    isTyping: false,
 
-  const timeSpent = testTime - timeLeft || 1;
-  const wpm = Math.round(wordsTyped * (60 / timeSpent));
+    onComplete: () => {
+      setIsTyping(false);
+      setTestCompleted(true);
+    },
+  });
 
-  const accuracy =
-    input.length === 0 ? 100 : Math.round((correctChars / input.length) * 100);
+  // TYPING
+  const {
+    input,
+    setInput,
 
-  const wordsArray = words.split(" ");
+    isTyping,
+    setIsTyping,
+
+    mistakes,
+    setMistakes,
+
+    wpm,
+    accuracy,
+  } = useTyping({
+    words,
+    testTime,
+    timeLeft,
+  });
+
+  // CURRENT INDEX
+  const currentIndex = input.length;
+
+  // CARET
+  const { caretPosition } = useCaret({
+    currentIndex,
+    words,
+    charRefs,
+    containerRef,
+  });
+
+  // INPUT WORDS
   const inputWords = input.split(" ");
 
-  const currentWord = wordsArray[inputWords.length - 1];
+  // TEST CONTENT
+  const { getTestContent } = useTest({
+    customText,
+    useCustomText,
+    mode,
+    dailyMode,
+  });
 
-  const generateContent = () => {
-    if (mode === "code") {
-      const randomIndex = Math.floor(Math.random() * codeSnippets.length);
-
-      return codeSnippets[randomIndex];
-    }
-
-    return generateWords(30);
-  };
-
-  // RESTART TEST
+  // RESTART
   const restartTest = () => {
     setInput("");
     setIsTyping(false);
@@ -72,55 +125,39 @@ const TypingBox = () => {
     setTestCompleted(false);
     setMistakes(0);
 
-    setWords(generateContent());
+    const testData = getTestContent();
+
+    setWords(testData.content);
+
+    setDailyChallengeTitle(testData.title);
 
     inputRef.current?.focus();
   };
 
-  // INITIAL WORD GENERATION
+  // INITIAL LOAD
   useEffect(() => {
-    setWords(generateContent());
+    restartTest();
   }, []);
 
-  // TIMER
-  useEffect(() => {
-    if (!isTyping) return;
-
-    if (timeLeft === 0) return;
-
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          setIsTyping(false);
-          setTestCompleted(true);
-
-          return 0;
-        }
-
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [isTyping, timeLeft]);
-
-  // AUTO END WHEN TEXT COMPLETES
+  // AUTO COMPLETE
   useEffect(() => {
     if (!words.length) return;
 
     if (input.length === words.length) {
       setTimeLeft(0);
+
       setIsTyping(false);
+
       setTestCompleted(true);
     }
   }, [input, words]);
 
-  // RESTART WITH TAB
+  // TAB RESTART
   useEffect(() => {
     const handleRestart = (e: KeyboardEvent) => {
       if (e.key === "Tab" && timeLeft === 0) {
         e.preventDefault();
+
         restartTest();
       }
     };
@@ -132,251 +169,132 @@ const TypingBox = () => {
     };
   }, [timeLeft]);
 
+  // MODE CHANGE
   useEffect(() => {
     restartTest();
   }, [mode]);
 
-  //   load saved WPN
+  // DAILY CHANGE
   useEffect(() => {
-    const savedBest = localStorage.getItem("best-wpm");
-    if (savedBest) {
-      setBestWpm(Number(savedBest));
-    }
-  }, []);
+    restartTest();
+  }, [dailyMode]);
 
-  // save new best Score
+  // SAVE BEST WPM
   useEffect(() => {
     if (!testCompleted) return;
 
     if (wpm > bestWpm) {
       setBestWpm(wpm);
-      localStorage.setItem("best-wpm", String(wpm));
     }
   }, [testCompleted]);
 
-  //   TRACK ACTIVE CHARACTER POSITION
-  useEffect(() => {
-    const currentChar = charRefs.current[currentIndex];
-    if (!currentChar) return;
-    setCaretPosition({
-      top: currentChar.offsetTop,
-      left: currentChar.offsetLeft,
-    });
-  }, [currentIndex, words]);
-
-  //   AUTO SCROLL ACTIVE LINE
-  useEffect(() => {
-    const currentChar = charRefs.current[currentIndex];
-    const container = containerRef.current;
-    if (!currentChar || !container) return;
-    const scrollPosition = currentChar.offsetTop - 120;
-    container.scrollTo({
-      top: scrollPosition,
-      behavior: "smooth",
-    });
-  }, [currentIndex]);
-
   return (
     <motion.div
-      className={`min-h-screen overflow-hidden ${theme.background} ${theme.text} flex flex-col items-center px-6 pt-20 pb-20`}
-      onClick={() => inputRef.current?.focus()}
+      className={`
+        min-h-screen
+        overflow-hidden
+        ${theme.background}
+        ${theme.text}
+        flex
+        flex-col
+        items-center
+        px-6
+        pt-20
+        pb-20
+      `}
+      onClick={() => {
+        if (!isCustomInputFocused) {
+          inputRef.current?.focus();
+        }
+      }}
       initial={{ opacity: 0, y: 40 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
     >
+      {/* TOP CONTROLS */}
       <div className="flex flex-row gap-20 items-center mb-6">
-        {/* THEME SELECTOR */}
-        <div className="flex gap-4 mb-10">
-          <button
-            onClick={() => setTheme(themes.default)}
-            className="w-5 h-5 rounded-full bg-yellow-400"
-          />
+        <ThemeSelector
+          themeName={themeName}
+          setThemeName={setThemeName}
+          setTheme={setTheme}
+        />
 
-          <button
-            onClick={() => setTheme(themes.ocean)}
-            className="w-5 h-5 rounded-full bg-cyan-400"
-          />
+        <TimerSelector
+          testTime={testTime}
+          setTestTime={setTestTime}
+          setInput={setInput}
+          setIsTyping={setIsTyping}
+          setTimeLeft={setTimeLeft}
+          setTestCompleted={setTestCompleted}
+          setMistakes={setMistakes}
+          setWords={setWords}
+          inputRef={inputRef}
+          isTyping={isTyping}
+          useCustomText={useCustomText}
+          customText={customText}
+          mode={mode}
+          theme={theme}
+        />
 
-          <button
-            onClick={() => setTheme(themes.forest)}
-            className="w-5 h-5 rounded-full bg-green-400"
-          />
-        </div>
-        <div className="flex gap-6 mb-10 font-mono text-sm">
-          {[15, 30, 60, 120].map((time) => (
-            <button
-              key={time}
-              onClick={() => {
-                if (isTyping) return;
+        <ModeSelector mode={mode} setMode={setMode} theme={theme} />
 
-                setTestTime(time);
-                setTimeLeft(time);
-                restartTest();
-              }}
-              className={` cursor-pointer
-                text-lg
-        transition-colors
-        duration-200
-        ${testTime === time ? theme.accent : "text-gray-600"}`}
-            >
-              {time}{" "}
-            </button>
-          ))}
-        </div>
-        {/* MODE SELECTOR */}
-        <div className="flex gap-6 mb-10 font-mono text-lg">
-          <button
-            onClick={() => setMode("words")}
-            className={`transition-colors cursor-pointer duration-200 ${
-              mode === "words" ? theme.accent : "text-gray-600"
-            }`}
-          >
-            words
-          </button>
+        <DailyChallenge
+          dailyMode={dailyMode}
+          setDailyMode={setDailyMode}
+          theme={theme}
+          dailyChallengeTitle={dailyChallengeTitle}
+        />
 
-          <button
-            onClick={() => setMode("code")}
-            className={`transition-colors cursor-pointer duration-200 ${
-              mode === "code" ? theme.accent : "text-gray-600"
-            }`}
-          >
-            code
-          </button>
-        </div>
+        <CustomTextBox
+          showCustomTextBox={showCustomTextBox}
+          setShowCustomTextBox={setShowCustomTextBox}
+          customText={customText}
+          setCustomText={setCustomText}
+          setIsCustomInputFocused={setIsCustomInputFocused}
+          setInput={setInput}
+          setIsTyping={setIsTyping}
+          setTimeLeft={setTimeLeft}
+          setTestCompleted={setTestCompleted}
+          setMistakes={setMistakes}
+          setWords={setWords}
+          setUseCustomText={setUseCustomText}
+          testTime={testTime}
+          inputRef={inputRef}
+          theme={theme}
+        />
       </div>
 
-      {/* TIMER */}
-      <div className="w-full max-w-5xl mb-12">
-        <div className="flex items-center gap-16">
-          <div className={`text-3xl font-mono font-bold ${theme.accent}`}>
-            {timeLeft}
-          </div>
-
-          <div className="text-gray-600 font-mono text-lg">best: {bestWpm}</div>
-          <div className="text-gray-600 font-mono text-lg capitalize">
-            mode: {mode}
-          </div>
-        </div>
-      </div>
+      {/* STATS */}
+      <StatsHeader
+        timeLeft={timeLeft}
+        bestWpm={bestWpm}
+        mode={mode}
+        theme={theme}
+      />
 
       {/* TYPING AREA */}
-      <div
-        ref={containerRef}
-        className="
-    w-full
-    max-w-5xl
-    h-[260px]
-    overflow-hidden
-    relative
-  "
-      >
-        <div className="relative pt-6 pb-2 text-3xl md:text-4xl font-mono leading-[1.8] whitespace-pre-wrap break-words select-none">
-          {!testCompleted && (
-            <span
-              className={`
-      absolute
-      w-[3px]
-      h-[42px]
-      rounded-full
-      animate-caret
-      transition-all
-      duration-75
-      shadow-[0_0_8px]
-      z-10
-      ${theme.caret}
-    `}
-              style={{
-                top: caretPosition.top,
-                left: caretPosition.left,
-              }}
-            />
-          )}
-
-          {words.split("").map((char, index) => {
-            let color = theme.sub;
-
-            if (index < input.length) {
-              const typedChar = input[index];
-
-              if (char === " " && typedChar === " ") {
-                color = theme.sub;
-              } else {
-                color = typedChar === char ? theme.text : "text-red-500";
-              }
-            }
-
-            const wordIndex = words.substring(0, index).split(" ").length - 1;
-
-            const isCurrentWord =
-              inputWords.length - 1 === wordIndex && char !== " ";
-
-            // DYNAMIC CARET
-            return (
-              <span
-                ref={(el) => {
-                  charRefs.current[index] = el;
-                }}
-                key={index}
-                className={`
-  relative
-  inline
-  transition-colors duration-150
-  ${color}
-`}
-                style={{
-                  whiteSpace: char === "\n" ? "pre" : "normal",
-                }}
-              >
-                {char === " " ? "\u00A0" : char}
-              </span>
-            );
-          })}
-        </div>
-      </div>
+      <TypingArea
+        words={words}
+        input={input}
+        inputWords={inputWords}
+        theme={theme}
+        testCompleted={testCompleted}
+        caretPosition={caretPosition}
+        containerRef={containerRef}
+        charRefs={charRefs}
+      />
 
       {/* RESULTS */}
       {testCompleted && (
-        <div
-          className={`
-      w-full
-      max-w-5xl
-      mt-24
-      p-10
-      rounded-2xl
-      bg-zinc-950/40
-      backdrop-blur
-      flex
-      gap-20
-      font-mono
-    `}
-        >
-          <div>
-            <p className="text-gray-500 text-sm mb-1 uppercase tracking-widest">
-              WPM
-            </p>
-
-            <h2 className={`text-7xl font-bold ${theme.accent}`}>{wpm}</h2>
-          </div>
-
-          <div>
-            <p className="text-gray-500 text-sm mb-1 uppercase tracking-widest">
-              Accuracy
-            </p>
-
-            <h2 className={`text-7xl font-bold ${theme.accent}`}>
-              {accuracy}%
-            </h2>
-          </div>
-
-          <div>
-            <p className="text-gray-500 text-sm mb-1 uppercase tracking-widest">
-              Mistakes
-            </p>
-
-            <h2 className={`text-7xl font-bold ${theme.accent}`}>{mistakes}</h2>
-          </div>
-        </div>
+        <ResultsCard
+          wpm={wpm}
+          accuracy={accuracy}
+          mistakes={mistakes}
+          theme={theme}
+        />
       )}
+
+      {/* MESSAGE */}
       {testCompleted && (
         <p className="mt-8 text-gray-500 font-mono">
           {wpm > 80
@@ -387,28 +305,12 @@ const TypingBox = () => {
         </p>
       )}
 
-      {/* RESTART MESSAGE */}
+      {/* RESTART */}
       {testCompleted && (
         <p className="text-gray-600 mt-8 font-mono text-base tracking-wide">
           press TAB to restart
         </p>
       )}
-
-      {/* TOP fade effect */}
-      <div
-        className="
-  pointer-events-none
-  absolute
-  top-0
-  left-0
-  w-full
-  h-24
-  bg-gradient-to-b
-  from-[rgba(0,0,0,1)]
-  to-transparent
-  z-20
-"
-      />
 
       {/* HIDDEN INPUT */}
       <input
@@ -417,38 +319,26 @@ const TypingBox = () => {
         value={input}
         className="opacity-0 absolute outline-none"
         autoFocus
-        disabled={testCompleted}
         onPaste={(e) => e.preventDefault()}
         onChange={(e) => {
+          if (testCompleted) return;
+
           const value = e.target.value;
 
           if (value.length > words.length) return;
 
           const lastCharIndex = value.length - 1;
 
-          if (value[lastCharIndex] !== words[lastCharIndex])
+          if (value[lastCharIndex] !== words[lastCharIndex]) {
             setMistakes((prev) => prev + 1);
-          //   if (value.endsWith(" ")) return;
+          }
+
           setInput(value);
 
           if (!isTyping) {
             setIsTyping(true);
           }
         }}
-      />
-      <div
-        className="
-  pointer-events-none
-  absolute
-  bottom-0
-  left-0
-  w-full
-  h-24
-  bg-gradient-to-t
-  from-[rgba(0,0,0,1)]
-  to-transparent
-  z-20
-"
       />
     </motion.div>
   );
