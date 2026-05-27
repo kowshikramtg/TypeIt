@@ -1,7 +1,6 @@
 type TypingAreaProps = {
   words: string;
   input: string;
-  inputWords: string[];
   theme: any;
 
   testCompleted: boolean;
@@ -13,15 +12,12 @@ type TypingAreaProps = {
 
   containerRef: React.RefObject<HTMLDivElement | null>;
 
-  charRefs: React.MutableRefObject<
-    (HTMLSpanElement | null)[]
-  >;
+  charRefs: React.MutableRefObject<(HTMLSpanElement | null)[]>;
 };
 
 const TypingArea = ({
   words,
   input,
-  inputWords,
   theme,
   testCompleted,
   caretPosition,
@@ -80,16 +76,10 @@ const TypingArea = ({
           if (index < input.length) {
             const typedChar = input[index];
 
-            if (
-              char === " " &&
-              typedChar === " "
-            ) {
+            if (char === " " && typedChar === " ") {
               color = theme.sub;
             } else {
-              color =
-                typedChar === char
-                  ? theme.text
-                  : "text-red-500";
+              color = typedChar === char ? theme.text : "text-red-500";
             }
           }
 
@@ -107,15 +97,10 @@ const TypingArea = ({
                 ${color}
               `}
               style={{
-                whiteSpace:
-                  char === "\n"
-                    ? "pre"
-                    : "normal",
+                whiteSpace: char === "\n" ? "pre" : "normal",
               }}
             >
-              {char === " "
-                ? "\u00A0"
-                : char}
+              {char === " " ? "\u00A0" : char}
             </span>
           );
         })}

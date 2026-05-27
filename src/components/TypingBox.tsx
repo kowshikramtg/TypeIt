@@ -19,6 +19,10 @@ import useCaret from "../hooks/useCaret";
 import useLocalStorage from "../hooks/useLocalStorage";
 import useTest from "../hooks/useTest";
 
+import AuthButton from "./AuthButton";
+import useAuth from "../hooks/useAuth";
+import saveScore from "../firebase/saveScore";
+
 const TypingBox = () => {
   // THEME
   const [themeName, setThemeName] = useLocalStorage("typeit-theme", "default");
@@ -51,6 +55,8 @@ const TypingBox = () => {
 
   const [dailyChallengeTitle, setDailyChallengeTitle] = useState("");
 
+  //   const [isTyping, setIsTyping] = useState(false);
+
   // INPUT REF
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -60,6 +66,19 @@ const TypingBox = () => {
   // CONTAINER REF
   const containerRef = useRef<HTMLDivElement>(null);
 
+  const [isTyping, setIsTyping] = useState(false);
+
+  // TYPING
+  const {
+    input,
+    setInput,
+
+    mistakes,
+    setMistakes,
+
+    accuracy,
+  } = useTyping({});
+
   // TIMER
   const {
     testTime,
@@ -68,7 +87,7 @@ const TypingBox = () => {
     timeLeft,
     setTimeLeft,
   } = useTimer({
-    isTyping: false,
+    running: isTyping,
 
     onComplete: () => {
       setIsTyping(false);
@@ -76,24 +95,12 @@ const TypingBox = () => {
     },
   });
 
-  // TYPING
-  const {
-    input,
-    setInput,
+  const wordsTyped =
+    input.trim().length > 0 ? input.trim().split(/\s+/).length : 0;
 
-    isTyping,
-    setIsTyping,
+  const timeSpent = (testTime - timeLeft) / 60;
 
-    mistakes,
-    setMistakes,
-
-    wpm,
-    accuracy,
-  } = useTyping({
-    words,
-    testTime,
-    timeLeft,
-  });
+  const wpm = timeSpent > 0 ? Math.round(wordsTyped / timeSpent) : 0;
 
   // CURRENT INDEX
   const currentIndex = input.length;
@@ -105,9 +112,6 @@ const TypingBox = () => {
     charRefs,
     containerRef,
   });
-
-  // INPUT WORDS
-  const inputWords = input.split(" ");
 
   // TEST CONTENT
   const { getTestContent } = useTest({
@@ -133,6 +137,9 @@ const TypingBox = () => {
 
     inputRef.current?.focus();
   };
+
+  // AUTH
+  const { user } = useAuth();
 
   // INITIAL LOAD
   useEffect(() => {
@@ -186,6 +193,20 @@ const TypingBox = () => {
     if (wpm > bestWpm) {
       setBestWpm(wpm);
     }
+
+    if (user) {
+      saveScore({
+        uid: user.uid,
+
+        name: user.displayName || "anonymous",
+
+        photoURL: user.photoURL || "",
+
+        wpm,
+        accuracy,
+        mistakes,
+      });
+    }
   }, [testCompleted]);
 
   return (
@@ -211,6 +232,7 @@ const TypingBox = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
     >
+      <AuthButton user={user} />
       {/* TOP CONTROLS */}
       <div className="flex flex-row gap-20 items-center mb-6">
         <ThemeSelector
@@ -276,7 +298,6 @@ const TypingBox = () => {
       <TypingArea
         words={words}
         input={input}
-        inputWords={inputWords}
         theme={theme}
         testCompleted={testCompleted}
         caretPosition={caretPosition}

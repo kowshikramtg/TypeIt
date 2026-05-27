@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 
 type UseTimerProps = {
-  isTyping: boolean;
+  running: boolean;
   onComplete: () => void;
 };
 
 const useTimer = ({
-  isTyping,
+  running,
   onComplete,
 }: UseTimerProps) => {
   const [testTime, setTestTime] =
@@ -16,7 +16,7 @@ const useTimer = ({
     useState(30);
 
   useEffect(() => {
-    if (!isTyping) return;
+    if (!running) return;
 
     if (timeLeft === 0) return;
 
@@ -35,11 +35,7 @@ const useTimer = ({
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [
-    isTyping,
-    timeLeft,
-    onComplete,
-  ]);
+  }, [running, timeLeft]);
 
   return {
     testTime,
