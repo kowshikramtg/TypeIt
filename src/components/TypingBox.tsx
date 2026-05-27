@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import generateWords from "../utils/generateWords";
 import themes from "../data/theme";
 import { motion } from "framer-motion";
+import codeSnippets from "../data/codeSnippets";
 
 const TypingBox = () => {
   const [words, setWords] = useState("");
@@ -14,6 +15,9 @@ const TypingBox = () => {
   const [theme, setTheme] = useState(themes.default);
   const [bestWpm, setBestWpm] = useState(0);
   const [caretPosition, setCaretPosition] = useState({ top: 0, left: 0 });
+
+  //   TYPING MODE
+  const [mode, setMode] = useState<"words" | "code">("words");
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -28,6 +32,9 @@ const TypingBox = () => {
 
   // CHAR Referecnce
   const charRefs = useRef<(HTMLSpanElement | null)[]>([]);
+
+  //   Continaer Ref for future use (like auto scroll)
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // STATS
   const correctChars = input
@@ -47,6 +54,16 @@ const TypingBox = () => {
 
   const currentWord = wordsArray[inputWords.length - 1];
 
+  const generateContent = () => {
+    if (mode === "code") {
+      const randomIndex = Math.floor(Math.random() * codeSnippets.length);
+
+      return codeSnippets[randomIndex];
+    }
+
+    return generateWords(30);
+  };
+
   // RESTART TEST
   const restartTest = () => {
     setInput("");
@@ -55,16 +72,14 @@ const TypingBox = () => {
     setTestCompleted(false);
     setMistakes(0);
 
-    const newWords = generateWords(30);
-    setWords(newWords);
+    setWords(generateContent());
 
     inputRef.current?.focus();
   };
 
   // INITIAL WORD GENERATION
   useEffect(() => {
-    const generated = generateWords(30);
-    setWords(generated);
+    setWords(generateContent());
   }, []);
 
   // TIMER
@@ -117,6 +132,10 @@ const TypingBox = () => {
     };
   }, [timeLeft]);
 
+  useEffect(() => {
+    restartTest();
+  }, [mode]);
+
   //   load saved WPN
   useEffect(() => {
     const savedBest = localStorage.getItem("best-wpm");
@@ -138,81 +157,126 @@ const TypingBox = () => {
   //   TRACK ACTIVE CHARACTER POSITION
   useEffect(() => {
     const currentChar = charRefs.current[currentIndex];
-    if (currentChar) {
-      setCaretPosition({
-        top: currentChar.offsetTop,
-        left: currentChar.offsetLeft,
-      });
-    }
+    if (!currentChar) return;
+    setCaretPosition({
+      top: currentChar.offsetTop,
+      left: currentChar.offsetLeft,
+    });
+  }, [currentIndex, words]);
+
+  //   AUTO SCROLL ACTIVE LINE
+  useEffect(() => {
+    const currentChar = charRefs.current[currentIndex];
+    const container = containerRef.current;
+    if (!currentChar || !container) return;
+    const scrollPosition = currentChar.offsetTop - 120;
+    container.scrollTo({
+      top: scrollPosition,
+      behavior: "smooth",
+    });
   }, [currentIndex]);
 
   return (
     <motion.div
-      className={`min-h-screen ${theme.background} ${theme.text} flex flex-col items-center justify-center px-6`}
+      className={`min-h-screen overflow-hidden ${theme.background} ${theme.text} flex flex-col items-center px-6 pt-20 pb-20`}
       onClick={() => inputRef.current?.focus()}
       initial={{ opacity: 0, y: 40 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
     >
-      {/* THEME SELECTOR */}
-      <div className="flex gap-4 mb-10">
-        <button
-          onClick={() => setTheme(themes.default)}
-          className="w-5 h-5 rounded-full bg-yellow-400"
-        />
-
-        <button
-          onClick={() => setTheme(themes.ocean)}
-          className="w-5 h-5 rounded-full bg-cyan-400"
-        />
-
-        <button
-          onClick={() => setTheme(themes.forest)}
-          className="w-5 h-5 rounded-full bg-green-400"
-        />
-      </div>
-      <div className="flex gap-6 mb-10 font-mono text-sm">
-        {[15, 30, 60, 120].map((time) => (
+      <div className="flex flex-row gap-20 items-center mb-6">
+        {/* THEME SELECTOR */}
+        <div className="flex gap-4 mb-10">
           <button
-            key={time}
-            onClick={() => {
-              if (isTyping) return;
+            onClick={() => setTheme(themes.default)}
+            className="w-5 h-5 rounded-full bg-yellow-400"
+          />
 
-              setTestTime(time);
-              setTimeLeft(time);
-              restartTest();
-            }}
-            className={` cursor-pointer
+          <button
+            onClick={() => setTheme(themes.ocean)}
+            className="w-5 h-5 rounded-full bg-cyan-400"
+          />
+
+          <button
+            onClick={() => setTheme(themes.forest)}
+            className="w-5 h-5 rounded-full bg-green-400"
+          />
+        </div>
+        <div className="flex gap-6 mb-10 font-mono text-sm">
+          {[15, 30, 60, 120].map((time) => (
+            <button
+              key={time}
+              onClick={() => {
+                if (isTyping) return;
+
+                setTestTime(time);
+                setTimeLeft(time);
+                restartTest();
+              }}
+              className={` cursor-pointer
                 text-lg
         transition-colors
         duration-200
         ${testTime === time ? theme.accent : "text-gray-600"}`}
+            >
+              {time}{" "}
+            </button>
+          ))}
+        </div>
+        {/* MODE SELECTOR */}
+        <div className="flex gap-6 mb-10 font-mono text-lg">
+          <button
+            onClick={() => setMode("words")}
+            className={`transition-colors cursor-pointer duration-200 ${
+              mode === "words" ? theme.accent : "text-gray-600"
+            }`}
           >
-            {time}{" "}
+            words
           </button>
-        ))}
+
+          <button
+            onClick={() => setMode("code")}
+            className={`transition-colors cursor-pointer duration-200 ${
+              mode === "code" ? theme.accent : "text-gray-600"
+            }`}
+          >
+            code
+          </button>
+        </div>
       </div>
 
       {/* TIMER */}
       <div className="w-full max-w-5xl mb-12">
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-16">
           <div className={`text-3xl font-mono font-bold ${theme.accent}`}>
             {timeLeft}
           </div>
 
           <div className="text-gray-600 font-mono text-lg">best: {bestWpm}</div>
+          <div className="text-gray-600 font-mono text-lg capitalize">
+            mode: {mode}
+          </div>
         </div>
       </div>
 
       {/* TYPING AREA */}
-      <div className="w-full max-w-5xl">
-        <div className="relative text-4xl font-mono leading-relaxed break-words select-none">
+      <div
+        ref={containerRef}
+        className="
+    w-full
+    max-w-5xl
+    h-[260px]
+    overflow-hidden
+    relative
+  "
+      >
+        <div className="relative pt-6 pb-2 text-3xl md:text-4xl font-mono leading-[1.8] whitespace-pre-wrap break-words select-none">
           {!testCompleted && (
             <span
               className={`
       absolute
       w-[3px]
-      h-[55px]
+      h-[42px]
       rounded-full
       animate-caret
       transition-all
@@ -258,17 +322,18 @@ const TypingBox = () => {
   inline
   transition-colors duration-150
   ${color}
-  ${isCurrentWord ? `${theme.active} rounded` : ""}
 `}
+                style={{
+                  whiteSpace: char === "\n" ? "pre" : "normal",
+                }}
               >
-                {char}
+                {char === " " ? "\u00A0" : char}
               </span>
             );
           })}
         </div>
       </div>
 
-      {/* RESULTS */}
       {/* RESULTS */}
       {testCompleted && (
         <div
@@ -286,7 +351,7 @@ const TypingBox = () => {
     `}
         >
           <div>
-            <p className="text-gray-500 text-sm mb-3 uppercase tracking-widest">
+            <p className="text-gray-500 text-sm mb-1 uppercase tracking-widest">
               WPM
             </p>
 
@@ -294,7 +359,7 @@ const TypingBox = () => {
           </div>
 
           <div>
-            <p className="text-gray-500 text-sm mb-3 uppercase tracking-widest">
+            <p className="text-gray-500 text-sm mb-1 uppercase tracking-widest">
               Accuracy
             </p>
 
@@ -304,7 +369,7 @@ const TypingBox = () => {
           </div>
 
           <div>
-            <p className="text-gray-500 text-sm mb-3 uppercase tracking-widest">
+            <p className="text-gray-500 text-sm mb-1 uppercase tracking-widest">
               Mistakes
             </p>
 
@@ -324,10 +389,26 @@ const TypingBox = () => {
 
       {/* RESTART MESSAGE */}
       {testCompleted && (
-        <p className="text-gray-600 mt-10 font-mono text-base tracking-wide">
+        <p className="text-gray-600 mt-8 font-mono text-base tracking-wide">
           press TAB to restart
         </p>
       )}
+
+      {/* TOP fade effect */}
+      <div
+        className="
+  pointer-events-none
+  absolute
+  top-0
+  left-0
+  w-full
+  h-24
+  bg-gradient-to-b
+  from-[rgba(0,0,0,1)]
+  to-transparent
+  z-20
+"
+      />
 
       {/* HIDDEN INPUT */}
       <input
@@ -354,6 +435,20 @@ const TypingBox = () => {
             setIsTyping(true);
           }
         }}
+      />
+      <div
+        className="
+  pointer-events-none
+  absolute
+  bottom-0
+  left-0
+  w-full
+  h-24
+  bg-gradient-to-t
+  from-[rgba(0,0,0,1)]
+  to-transparent
+  z-20
+"
       />
     </motion.div>
   );
