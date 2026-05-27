@@ -1,53 +1,35 @@
+import type { Theme } from "../types/theme";
+
 type CustomTextBoxProps = {
   showCustomTextBox: boolean;
 
-  setShowCustomTextBox: React.Dispatch<
-    React.SetStateAction<boolean>
-  >;
+  setShowCustomTextBox: React.Dispatch<React.SetStateAction<boolean>>;
 
   customText: string;
 
-  setCustomText: React.Dispatch<
-    React.SetStateAction<string>
-  >;
+  setCustomText: React.Dispatch<React.SetStateAction<string>>;
 
-  setIsCustomInputFocused: React.Dispatch<
-    React.SetStateAction<boolean>
-  >;
+  setIsCustomInputFocused: React.Dispatch<React.SetStateAction<boolean>>;
 
-  setInput: React.Dispatch<
-    React.SetStateAction<string>
-  >;
+  setInput: React.Dispatch<React.SetStateAction<string>>;
 
-  setIsTyping: React.Dispatch<
-    React.SetStateAction<boolean>
-  >;
+  setIsTyping: React.Dispatch<React.SetStateAction<boolean>>;
 
-  setTimeLeft: React.Dispatch<
-    React.SetStateAction<number>
-  >;
+  setTimeLeft: React.Dispatch<React.SetStateAction<number>>;
 
-  setTestCompleted: React.Dispatch<
-    React.SetStateAction<boolean>
-  >;
+  setTestCompleted: React.Dispatch<React.SetStateAction<boolean>>;
 
-  setMistakes: React.Dispatch<
-    React.SetStateAction<number>
-  >;
+  setMistakes: React.Dispatch<React.SetStateAction<number>>;
 
-  setWords: React.Dispatch<
-    React.SetStateAction<string>
-  >;
+  setWords: React.Dispatch<React.SetStateAction<string>>;
 
-  setUseCustomText: React.Dispatch<
-    React.SetStateAction<boolean>
-  >;
+  setUseCustomText: React.Dispatch<React.SetStateAction<boolean>>;
 
   testTime: number;
 
   inputRef: React.RefObject<HTMLInputElement | null>;
 
-  theme: any;
+  theme: Theme;
 };
 
 const CustomTextBox = ({
@@ -71,9 +53,7 @@ const CustomTextBox = ({
     <div className="absolute top-20 right-20">
       {!showCustomTextBox ? (
         <button
-          onClick={() =>
-            setShowCustomTextBox(true)
-          }
+          onClick={() => setShowCustomTextBox(true)}
           className="
             px-5
             py-2
@@ -92,15 +72,9 @@ const CustomTextBox = ({
         <div className="w-[350px]">
           <textarea
             value={customText}
-            onChange={(e) =>
-              setCustomText(e.target.value)
-            }
-            onFocus={() =>
-              setIsCustomInputFocused(true)
-            }
-            onBlur={() =>
-              setIsCustomInputFocused(false)
-            }
+            onChange={(e) => setCustomText(e.target.value)}
+            onFocus={() => setIsCustomInputFocused(true)}
+            onBlur={() => setIsCustomInputFocused(false)}
             placeholder="paste your custom text or code here..."
             className={`
               w-full

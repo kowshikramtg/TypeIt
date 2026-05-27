@@ -17,7 +17,19 @@ const useUserStats = () => {
   });
 
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      queueMicrotask(() => {
+        setStats({
+          totalTests: 0,
+          bestWpm: 0,
+          averageWpm: 0,
+          averageAccuracy: 0,
+          totalMistakes: 0,
+        });
+        setLoading(false);
+      });
+      return;
+    }
 
     const fetchStats = async () => {
       try {

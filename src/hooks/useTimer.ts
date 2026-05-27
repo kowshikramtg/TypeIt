@@ -35,7 +35,7 @@ const useTimer = ({
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [running, timeLeft]);
+  }, [running, timeLeft, onComplete]);
 
   return {
     testTime,

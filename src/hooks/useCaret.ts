@@ -31,11 +31,13 @@ const useCaret = ({
 
     if (!currentChar) return;
 
-    setCaretPosition({
-      top: currentChar.offsetTop,
-      left: currentChar.offsetLeft,
+    queueMicrotask(() => {
+      setCaretPosition({
+        top: currentChar.offsetTop,
+        left: currentChar.offsetLeft,
+      });
     });
-  }, [currentIndex, words]);
+  }, [currentIndex, words, charRefs]);
 
   // AUTO SCROLL
   useEffect(() => {
@@ -55,7 +57,7 @@ const useCaret = ({
       top: scrollPosition,
       behavior: "smooth",
     });
-  }, [currentIndex]);
+  }, [currentIndex, charRefs, containerRef]);
 
   return {
     caretPosition,

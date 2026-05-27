@@ -1,3 +1,5 @@
+import type { Timestamp } from "firebase/firestore";
+
 export interface Score {
   id: string;
 
@@ -9,6 +11,6 @@ export interface Score {
   accuracy: number;
   mistakes: number;
 
-  createdAt: any;
+  createdAt: Timestamp | null;
 }
 // export interface Score

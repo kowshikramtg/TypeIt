@@ -1,22 +1,19 @@
-import {
-  LineChart,
-  Line,
-  ResponsiveContainer,
-  XAxis,
-  Tooltip,
-} from "recharts";
+import { LineChart, Line, ResponsiveContainer, XAxis, Tooltip } from "recharts";
+
+type ChartData = {
+  date: string;
+  wpm: number;
+  accuracy: number;
+};
 
 type Props = {
-  data: any[];
+  data: ChartData[];
 };
 
 const WpmChart = ({ data }: Props) => {
   return (
     <div className="h-64 w-full">
-      <ResponsiveContainer
-        width="100%"
-        height="100%"
-      >
+      <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data}>
           <XAxis dataKey="date" />
 

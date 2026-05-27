@@ -1,10 +1,10 @@
 import { useState } from "react";
 
 
-type UseTypingProps = {};
-
-const useTyping = ({}: UseTypingProps) => {
+const useTyping = () => {
   const [input, setInput] = useState("");
+  const [isTyping, setIsTyping] =
+    useState(false);
   const [mistakes, setMistakes] =
     useState(0);
 
@@ -24,6 +24,9 @@ const useTyping = ({}: UseTypingProps) => {
   return {
     input,
     setInput,
+
+    isTyping,
+    setIsTyping,
 
     mistakes,
     setMistakes,

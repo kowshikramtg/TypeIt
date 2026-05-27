@@ -1,8 +1,10 @@
+import type { Theme } from "../types/theme";
+
 type ResultsCardProps = {
   wpm: number;
   accuracy: number;
   mistakes: number;
-  theme: any;
+  theme: Theme;
 };
 
 const ResultsCard = ({ wpm, accuracy, mistakes, theme }: ResultsCardProps) => {

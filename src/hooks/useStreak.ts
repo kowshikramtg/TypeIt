@@ -18,7 +18,13 @@ const useStreak = () => {
     useState(0);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      queueMicrotask(() => {
+        setCurrentStreak(0);
+        setLongestStreak(0);
+      });
+      return;
+    }
 
     const fetchStreak = async () => {
       try {
@@ -33,6 +39,10 @@ const useStreak = () => {
         activity.forEach((score) => {
           const date =
             score.createdAt?.toDate();
+
+          if (!date) {
+            return;
+          }
 
           const alreadyExists =
             uniqueDays.some((d) =>

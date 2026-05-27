@@ -3,6 +3,7 @@ import {
   doc,
   getDoc,
   setDoc,
+  serverTimestamp,
 } from "firebase/firestore";
 
 import { db } from "./config";
@@ -50,7 +51,7 @@ export const getDailyChallenge =
 
     const challenge = {
       text: randomText,
-      createdAt: new Date(),
+      createdAt: serverTimestamp(),
     };
 
     await setDoc(ref, challenge);

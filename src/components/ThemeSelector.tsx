@@ -1,9 +1,11 @@
 import themes from "../data/theme";
 
+import type { Theme } from "../types/theme";
+
 type ThemeSelectorProps = {
   themeName: string;
   setThemeName: React.Dispatch<React.SetStateAction<string>>;
-  setTheme: React.Dispatch<any>;
+  setTheme: React.Dispatch<React.SetStateAction<Theme>>;
 };
 
 const themeButtons = [

@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { motion } from "framer-motion";
 
 import themes from "../data/theme";
+import type { Theme } from "../types/theme";
 
 import ThemeSelector from "./ThemeSelector";
 import TimerSelector from "./TimerSelector";
@@ -27,7 +28,9 @@ const TypingBox = () => {
   // THEME
   const [themeName, setThemeName] = useLocalStorage("typeit-theme", "default");
 
-  const [theme, setTheme] = useState(themes[themeName as keyof typeof themes]);
+  const [theme, setTheme] = useState<Theme>(
+    themes[themeName as keyof typeof themes],
+  );
 
   // WORDS
   const [words, setWords] = useState("");
@@ -53,8 +56,6 @@ const TypingBox = () => {
   // DAILY
   const [dailyMode, setDailyMode] = useState(false);
 
-  const [dailyChallengeTitle, setDailyChallengeTitle] = useState("");
-
   //   const [isTyping, setIsTyping] = useState(false);
 
   // INPUT REF
@@ -66,20 +67,32 @@ const TypingBox = () => {
   // CONTAINER REF
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const [isTyping, setIsTyping] = useState(false);
-
   // TYPING
   const {
     input,
     setInput,
 
+    isTyping,
+    setIsTyping,
+
     mistakes,
     setMistakes,
 
     accuracy,
-  } = useTyping({});
+  } = useTyping();
 
-  // TIMER
+  const handleRaceComplete = useCallback(() => {
+    setIsTyping(false);
+    setTestCompleted(true);
+  }, [setIsTyping, setTestCompleted]);
+
+  const { getTestContent } = useTest({
+    customText,
+    useCustomText,
+    mode,
+    dailyMode,
+  });
+
   const {
     testTime,
     setTestTime,
@@ -89,11 +102,22 @@ const TypingBox = () => {
   } = useTimer({
     running: isTyping,
 
-    onComplete: () => {
-      setIsTyping(false);
-      setTestCompleted(true);
-    },
+    onComplete: handleRaceComplete,
   });
+
+  const restartTest = useCallback(() => {
+    setInput("");
+    setIsTyping(false);
+    setTimeLeft(testTime);
+    setTestCompleted(false);
+    setMistakes(0);
+
+    const testData = getTestContent();
+
+    setWords(testData.content);
+
+    inputRef.current?.focus();
+  }, [testTime]);
 
   const wordsTyped =
     input.trim().length > 0 ? input.trim().split(/\s+/).length : 0;
@@ -113,27 +137,20 @@ const TypingBox = () => {
     containerRef,
   });
 
-  // TEST CONTENT
-  const { getTestContent } = useTest({
-    customText,
-    useCustomText,
-    mode,
-    dailyMode,
-  });
-
   // RESTART
-  const restartTest = () => {
+  const handleTimeSelection = (time: number) => {
+    if (isTyping) return;
+
+    setTestTime(time);
     setInput("");
     setIsTyping(false);
-    setTimeLeft(testTime);
+    setTimeLeft(time);
     setTestCompleted(false);
     setMistakes(0);
 
     const testData = getTestContent();
 
     setWords(testData.content);
-
-    setDailyChallengeTitle(testData.title);
 
     inputRef.current?.focus();
   };
@@ -143,7 +160,7 @@ const TypingBox = () => {
 
   // INITIAL LOAD
   useEffect(() => {
-    restartTest();
+    queueMicrotask(restartTest);
   }, []);
 
   // AUTO COMPLETE
@@ -151,20 +168,19 @@ const TypingBox = () => {
     if (!words.length) return;
 
     if (input.length === words.length) {
-      setTimeLeft(0);
-
-      setIsTyping(false);
-
-      setTestCompleted(true);
+      queueMicrotask(() => {
+        setTimeLeft(0);
+        setIsTyping(false);
+        setTestCompleted(true);
+      });
     }
-  }, [input, words]);
+  }, [input, words, setTimeLeft, setIsTyping, setTestCompleted]);
 
   // TAB RESTART
   useEffect(() => {
     const handleRestart = (e: KeyboardEvent) => {
       if (e.key === "Tab" && timeLeft === 0) {
         e.preventDefault();
-
         restartTest();
       }
     };
@@ -178,44 +194,44 @@ const TypingBox = () => {
 
   // MODE CHANGE
   useEffect(() => {
-    restartTest();
+    queueMicrotask(restartTest);
   }, [mode]);
 
   // DAILY CHANGE
   useEffect(() => {
-    restartTest();
+    queueMicrotask(restartTest);
   }, [dailyMode]);
 
   // SAVE BEST WPM
   useEffect(() => {
     if (!testCompleted) return;
 
-    if (wpm > bestWpm) {
-      setBestWpm(wpm);
-    }
+    queueMicrotask(() => {
+      if (wpm > bestWpm) {
+        setBestWpm(wpm);
+      }
 
-    if (user) {
-      saveScore({
-        uid: user.uid,
-
-        name: user.displayName || "anonymous",
-
-        photoURL: user.photoURL || "",
-
-        wpm,
-        accuracy,
-        mistakes,
-      });
-    }
-  }, [testCompleted]);
+      if (user) {
+        saveScore({
+          uid: user.uid,
+          name: user.displayName || "anonymous",
+          photoURL: user.photoURL || "",
+          wpm,
+          accuracy,
+          mistakes,
+        });
+      }
+    });
+  }, [testCompleted, user, wpm, bestWpm, accuracy, mistakes, setBestWpm]);
 
   return (
     <motion.div
       className={`
+        w-screen
         min-h-screen
-        overflow-hidden
         ${theme.background}
         ${theme.text}
+        overflow-hidden
         flex
         flex-col
         items-center
@@ -243,18 +259,8 @@ const TypingBox = () => {
 
         <TimerSelector
           testTime={testTime}
-          setTestTime={setTestTime}
-          setInput={setInput}
-          setIsTyping={setIsTyping}
-          setTimeLeft={setTimeLeft}
-          setTestCompleted={setTestCompleted}
-          setMistakes={setMistakes}
-          setWords={setWords}
-          inputRef={inputRef}
+          onTimeSelect={handleTimeSelection}
           isTyping={isTyping}
-          useCustomText={useCustomText}
-          customText={customText}
-          mode={mode}
           theme={theme}
         />
 
@@ -337,7 +343,7 @@ const TypingBox = () => {
         ref={inputRef}
         type="text"
         value={input}
-        className="opacity-0 absolute outline-none"
+        className="opacity-0 absolute outline-none bottom-0 right-0 w-px h-px"
         autoFocus
         onPaste={(e) => e.preventDefault()}
         onChange={(e) => {

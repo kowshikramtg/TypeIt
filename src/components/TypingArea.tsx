@@ -1,7 +1,9 @@
+import type { Theme } from "../types/theme";
+
 type TypingAreaProps = {
   words: string;
   input: string;
-  theme: any;
+  theme: Theme;
 
   testCompleted: boolean;
 

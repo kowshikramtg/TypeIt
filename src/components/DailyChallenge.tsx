@@ -1,11 +1,11 @@
 import useDailyChallenge from "../hooks/useDailyChallenge";
 
+import type { Theme } from "../types/theme";
+
 type DailyChallengeProps = {
   dailyMode: boolean;
-  setDailyMode: React.Dispatch<
-    React.SetStateAction<boolean>
-  >;
-  theme: any;
+  setDailyMode: React.Dispatch<React.SetStateAction<boolean>>;
+  theme: Theme;
 };
 
 const DailyChallenge = ({
@@ -13,15 +13,10 @@ const DailyChallenge = ({
   setDailyMode,
   theme,
 }: DailyChallengeProps) => {
-  const { challenge, loading } =
-    useDailyChallenge();
+  const { challenge, loading } = useDailyChallenge();
 
   if (loading) {
-    return (
-      <div className="text-zinc-500">
-        Loading challenge...
-      </div>
-    );
+    return <div className="text-zinc-500">Loading challenge...</div>;
   }
 
   return (
@@ -36,11 +31,7 @@ const DailyChallenge = ({
           cursor-pointer
           font-mono
           text-lg
-          ${
-            dailyMode
-              ? theme.accent
-              : "text-gray-600"
-          }
+          ${dailyMode ? theme.accent : "text-gray-600"}
         `}
       >
         daily

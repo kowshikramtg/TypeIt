@@ -1,29 +1,30 @@
+import { useState } from "react";
 import TypingBox from "../components/TypingBox";
-
-import Leaderboard from "../components/Leaderboard";
-import UserStatsCard from "../components/UserStatsCard";
-import HistoryList from "../components/HistoryList";
-import StreakCard from "../components/StreakCard";
-
-import AnalyticsCard from "../components/analytics/AnalyticsCard";
+import Navigation from "../components/Navigation";
+import AnalyticsPage from "../components/AnalyticsPage";
+import GroupPlayPage from "../components/GroupPlayPage";
 
 const Home = () => {
+  const [currentView, setCurrentView] = useState<
+    "typing" | "analytics" | "groupplay"
+  >("typing");
+
   return (
-    <main className="min-h-screen bg-black px-6 py-10">
-      <div className="space-y-12">
-        <TypingBox />
+    <div className="w-full min-h-screen bg-zinc-950">
+      <Navigation currentView={currentView} onViewChange={setCurrentView} />
 
-        <StreakCard />
+      <div className="pt-16">
+        {currentView === "typing" && (
+          <div className="w-screen min-h-screen bg-gradient-to-b from-zinc-950 via-purple-950/20 to-zinc-950 overflow-hidden">
+            <TypingBox />
+          </div>
+        )}
 
-        <UserStatsCard />
+        {currentView === "analytics" && <AnalyticsPage />}
 
-        <AnalyticsCard />
-
-        <Leaderboard />
-
-        <HistoryList />
+        {currentView === "groupplay" && <GroupPlayPage />}
       </div>
-    </main>
+    </div>
   );
 };
 

@@ -1,90 +1,41 @@
-import generateWords from "../utils/generateWords";
-import codeSnippets from "../data/codeSnippets";
+import type { Theme } from "../types/theme";
 
 type TimerSelectorProps = {
   testTime: number;
-  setTestTime: React.Dispatch<React.SetStateAction<number>>;
-
-  setInput: React.Dispatch<React.SetStateAction<string>>;
-
-  setIsTyping: React.Dispatch<React.SetStateAction<boolean>>;
-
-  setTimeLeft: React.Dispatch<React.SetStateAction<number>>;
-
-  setTestCompleted: React.Dispatch<React.SetStateAction<boolean>>;
-
-  setMistakes: React.Dispatch<React.SetStateAction<number>>;
-
-  setWords: React.Dispatch<React.SetStateAction<string>>;
-
-  inputRef: React.RefObject<HTMLInputElement | null>;
-
+  onTimeSelect: (time: number) => void;
   isTyping: boolean;
-
-  useCustomText: boolean;
-
-  customText: string;
-
-  mode: "words" | "code";
-
-  theme: any;
+  theme: Theme;
 };
 
 const TimerSelector = ({
   testTime,
-  setTestTime,
-  setInput,
-  setIsTyping,
-  setTimeLeft,
-  setTestCompleted,
-  setMistakes,
-  setWords,
-  inputRef,
+  onTimeSelect,
   isTyping,
-  useCustomText,
-  customText,
-  mode,
-  theme,
 }: TimerSelectorProps) => {
   return (
-    <div className="flex gap-6 mb-10 font-mono text-sm">
+    <div className="flex gap-4 mb-10 font-mono text-sm">
       {[15, 30, 60, 120].map((time) => (
         <button
           key={time}
           onMouseDown={(e) => e.stopPropagation()}
           onClick={() => {
             if (isTyping) return;
-
-            setTestTime(time);
-
-            setInput("");
-            setIsTyping(false);
-            setTimeLeft(time);
-            setTestCompleted(false);
-            setMistakes(0);
-
-            if (useCustomText && customText.trim()) {
-              setWords(customText);
-            } else if (mode === "code") {
-              const randomIndex = Math.floor(
-                Math.random() * codeSnippets.length,
-              );
-
-              setWords(codeSnippets[randomIndex]);
-            } else {
-              setWords(generateWords(30));
-            }
-
-            inputRef.current?.focus();
+            onTimeSelect(time);
           }}
           className={`
-            cursor-pointer
-            text-lg
+            px-4
+            py-2
             rounded-md
             transition-all
             duration-200
-            hover:${theme.accent} hover:text-white
-            ${testTime === time ? theme.accent : "text-gray-600"}
+            font-semibold
+            select-none
+            ${
+              testTime === time
+                ? "bg-purple-500 text-white shadow-lg"
+                : "bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-white"
+            }
+            ${isTyping ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
           `}
         >
           {time}
