@@ -1,73 +1,133 @@
-# React + TypeScript + Vite
+<h1 align="center">TypeIt — Modern Real-Time Typing Platform</h1>
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+<p align="center">
+  <img src="https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=white" />
+  <img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" />
+  <img src="https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white" />
+  <img src="https://img.shields.io/badge/TailwindCSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white" />
+  <img src="https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black" />
+  <img src="https://img.shields.io/badge/Realtime-Multiplayer-success?style=for-the-badge" />
+</p>
 
-Currently, two official plugins are available:
+<p align="center">
+  <b>A modern MonkeyType-inspired typing platform engineered for speed, real-time competition, and clean developer architecture.</b>
+</p>
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+# ✨ Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+* ⚡ Ultra-fast real-time typing engine
+* 🌍 Multiplayer typing rooms
+* 🏆 Global leaderboard system
+* 📊 Live WPM & accuracy tracking
+* 🎯 Daily typing challenges
+* 🎨 Dynamic themes & customization
+* 💻 Code typing mode
+* 🔥 Firebase authentication
+* ☁️ Firestore score persistence
+* 📱 Responsive modern UI
+* 🧩 Reusable hooks & scalable architecture
+* ⌨️ Smart caret movement & typing feedback
+* 📈 Result analytics dashboard
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+# 🏗️ Tech Stack
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+| Technology    | Purpose                  |
+| ------------- | ------------------------ |
+| React 19      | Frontend UI              |
+| TypeScript    | Type safety              |
+| Vite          | Fast development bundler |
+| Tailwind CSS  | Styling system           |
+| Firebase Auth | Authentication           |
+| Firestore     | Database & leaderboard   |
+| React Hooks   | State architecture       |
+| Context API   | Global state management  |
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# 📂 Project Architecture
+
+```bash id="z0v4k1"
+src/
+├── components/
+├── hooks/
+├── pages/
+├── contexts/
+├── firebase/
+├── services/
+├── utils/
+├── types/
+└── styles/
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Built with a scalable separation-focused structure for maintainability and future expansion.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+---
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# 🚀 Getting Started
+
+## 1️⃣ Clone the Repository
+
+```bash id="2xv7d0"
+git clone https://github.com/your-username/typeit.git
 ```
+
+---
+
+## 2️⃣ Install Dependencies
+
+```bash id="z6w3p8"
+npm install
+```
+
+---
+
+## 3️⃣ Start Development Server
+
+```bash id="s3m8a1"
+npm run dev
+```
+
+---
+
+# 🔥 Upcoming Features
+
+* 🎤 Voice typing mode
+* 🧠 AI typing analysis
+* 👥 Friends & profile system
+* 🌐 Multiplayer matchmaking
+* 📊 Advanced performance graphs
+* 🏅 Achievement system
+* 📱 Mobile app version
+
+---
+
+# 🎯 Vision
+
+TypeIt is designed to become more than just a typing website —
+it's a competitive, social, and performance-focused typing ecosystem built with modern engineering principles.
+
+---
+
+# 🤝 Contributing
+
+Contributions, ideas, and feedback are always welcome.
+
+```bash id="d8x1f5"
+Fork → Build → Improve → Pull Request 🚀
+```
+
+---
+
+# 📜 License
+
+This project is licensed under the MIT License.
+
+---
+
+<p align="center">
+  Built with ❤️ using modern web technologies
+</p>
