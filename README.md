@@ -15,7 +15,7 @@
 
 ---
 
-# ✨ Features
+# Features
 
 * ⚡ Ultra-fast real-time typing engine
 * 🌍 Multiplayer typing rooms
@@ -33,7 +33,7 @@
 
 ---
 
-# 🏗️ Tech Stack
+# Tech Stack
 
 | Technology    | Purpose                  |
 | ------------- | ------------------------ |
@@ -69,7 +69,7 @@ Built with a scalable separation-focused structure for maintainability and futur
 
 # 🚀 Getting Started
 
-## 1️⃣ Clone the Repository
+## 1️ Clone the Repository
 
 ```bash id="2xv7d0"
 git clone https://github.com/your-username/typeit.git
@@ -77,7 +77,7 @@ git clone https://github.com/your-username/typeit.git
 
 ---
 
-## 2️⃣ Install Dependencies
+## 2️ Install Dependencies
 
 ```bash id="z6w3p8"
 npm install
@@ -85,7 +85,7 @@ npm install
 
 ---
 
-## 3️⃣ Start Development Server
+## 3️ Start Development Server
 
 ```bash id="s3m8a1"
 npm run dev
@@ -95,8 +95,6 @@ npm run dev
 
 # 🔥 Upcoming Features
 
-* 🎤 Voice typing mode
-* 🧠 AI typing analysis
 * 👥 Friends & profile system
 * 🌐 Multiplayer matchmaking
 * 📊 Advanced performance graphs
@@ -129,5 +127,5 @@ This project is licensed under the MIT License.
 ---
 
 <p align="center">
-  Built with ❤️ using modern web technologies
+  Built by Kowsh with ❤️ (Huge). So wanting for colaborative projects? I'm On....
 </p>
