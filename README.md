@@ -17,89 +17,122 @@
 
 # Features
 
-* ⚡ Ultra-fast real-time typing engine
-* 🌍 Multiplayer typing rooms
-* 🏆 Global leaderboard system
-* 📊 Live WPM & accuracy tracking
-* 🎯 Daily typing challenges
-* 🎨 Dynamic themes & customization
-* 💻 Code typing mode
-* 🔥 Firebase authentication
-* ☁️ Firestore score persistence
-* 📱 Responsive modern UI
-* 🧩 Reusable hooks & scalable architecture
-* ⌨️ Smart caret movement & typing feedback
-* 📈 Result analytics dashboard
+* ⚡ **Ultra-fast real-time typing engine** with 60fps auto-scrolling
+* 🌍 **Multiplayer Group Play**: Create or join rooms and race friends in real-time
+* 🏆 **Global Leaderboard**: Rank against others using effective WPM (accuracy factored)
+* 📊 **Analytics Dashboard**: View historical data and typing performance trends
+* 🎯 **Daily typing challenges** & **Code typing mode**
+* 🎨 **Dynamic Theme System**: Easily swap color palettes without reloading
+* 🔥 **Firebase Authentication**: Secure Google sign-in
+* ☁️ **Persistent Typing History**: Scores and stats are safely saved to Firestore
+* 👁️ **Focus Mode**: UI elegantly fades out when typing begins for maximum immersion
+* 📚 **Long-form Typing Passages**: High-quality, realistic developer-oriented text content
+* 💻 **Smart caret movement**: Live feedback for typing accuracy
+* 📱 **Responsive modern UI**: Carefully crafted with Tailwind CSS
 
 ---
 
-# Tech Stack
+# Tech Stack & Architecture
+
+Built with a scalable, separation-focused structure for maintainability and future expansion.
 
 | Technology    | Purpose                  |
 | ------------- | ------------------------ |
-| React 19      | Frontend UI              |
-| TypeScript    | Type safety              |
-| Vite          | Fast development bundler |
-| Tailwind CSS  | Styling system           |
-| Firebase Auth | Authentication           |
-| Firestore     | Database & leaderboard   |
-| React Hooks   | State architecture       |
-| Context API   | Global state management  |
+| **React 19**      | Frontend UI              |
+| **TypeScript**    | Type safety              |
+| **Vite**          | Fast development bundler |
+| **Tailwind CSS**  | Styling system           |
+| **Firebase Auth** | Authentication           |
+| **Firestore**     | Database & leaderboard   |
+| **Framer Motion** | Fluid animations         |
 
----
+### 📂 Directory Structure
 
-# 📂 Project Architecture
-
-```bash id="z0v4k1"
+```bash
 src/
-├── components/
-├── hooks/
-├── pages/
-├── contexts/
-├── firebase/
-├── services/
-├── utils/
-├── types/
-└── styles/
+├── components/   # Reusable UI components & Multiplayer views
+├── hooks/        # Custom React hooks (useCaret, useTest, useRoom)
+├── pages/        # Main application views
+├── firebase/     # Firebase initialization and services
+├── data/         # Mock data and typing passages
+├── utils/        # Helper functions
+├── types/        # TypeScript interfaces and models
+└── styles/       # Global CSS and Tailwind directives
 ```
-
-Built with a scalable separation-focused structure for maintainability and future expansion.
 
 ---
 
-# 🚀 Getting Started
+# 🗄️ Firebase Schema
 
-## 1️ Clone the Repository
+The application relies on Google Cloud Firestore for data persistence. It utilizes the following main collections:
 
-```bash id="2xv7d0"
+* `scores`: Individual typing test results.
+  - Fields: `uid`, `name`, `photoURL`, `wpm`, `accuracy`, `mistakes`, `createdAt`
+* `leaderboardStats`: Aggregated player performance for the global leaderboard.
+  - Fields: `bestEffectiveWpm`, `bestWpm`, `avgWpm`, `avgAccuracy`, `wins`, `totalRaces`
+* `rooms`: Multiplayer lobby instances.
+  - Fields: `roomCode`, `hostId`, `status`, `passage`, `players`
+* `raceProgress`: Real-time multiplayer synchronization.
+  - Fields: `roomId`, `playerId`, `progress`, `wpm`, `status`
+
+---
+
+# 🚀 Getting Started (Local Development)
+
+## 1️⃣ Clone the Repository
+
+```bash
 git clone https://github.com/your-username/typeit.git
+cd typeit
 ```
 
----
+## 2️⃣ Install Dependencies
 
-## 2️ Install Dependencies
-
-```bash id="z6w3p8"
+```bash
 npm install
 ```
 
----
+## 3️⃣ Environment Variables
 
-## 3️ Start Development Server
+Create a `.env` file in the root of the project and populate it with your Firebase project configuration. **Do not commit secret values.**
 
-```bash id="s3m8a1"
+```env
+VITE_FIREBASE_API_KEY="your_api_key_here"
+VITE_FIREBASE_AUTH_DOMAIN="your_project_id.firebaseapp.com"
+VITE_FIREBASE_PROJECT_ID="your_project_id"
+VITE_FIREBASE_STORAGE_BUCKET="your_project_id.appspot.com"
+VITE_FIREBASE_MESSAGING_SENDER_ID="your_sender_id"
+VITE_FIREBASE_APP_ID="your_app_id"
+```
+
+## 4️⃣ Start Development Server
+
+```bash
 npm run dev
 ```
 
 ---
 
-# 🔥 Upcoming Features
+# ☁️ Deployment (Vercel)
+
+TypeIt is fully optimized for deployment on Vercel.
+
+1. Push your code to a GitHub repository.
+2. Log into [Vercel](https://vercel.com/) and click **Add New Project**.
+3. Import your GitHub repository.
+4. Expand **Environment Variables** and add your `VITE_FIREBASE_*` keys.
+5. Ensure the Build Command is `npm run build` and Output Directory is `dist`.
+6. Click **Deploy**. Your typing app will be live globally in seconds!
+
+---
+
+# 🔥 Future Roadmap
 
 * 👥 Friends & profile system
-* 🌐 Multiplayer matchmaking
-* 📊 Advanced performance graphs
-* 🏅 Achievement system
-* 📱 Mobile app version
+* 🌐 Global multiplayer matchmaking queue
+* 📊 Advanced performance graphs and heatmaps
+* 🏅 Achievement and badge system
+* 📱 Mobile app version (React Native / Capacitor)
 
 ---
 
@@ -114,7 +147,7 @@ it's a competitive, social, and performance-focused typing ecosystem built with 
 
 Contributions, ideas, and feedback are always welcome.
 
-```bash id="d8x1f5"
+```bash
 Fork → Build → Improve → Pull Request 🚀
 ```
 
