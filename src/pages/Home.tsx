@@ -11,6 +11,7 @@ const Home = () => {
   const [currentView, setCurrentView] = useState<
     "typing" | "analytics" | "groupplay"
   >("typing");
+  const [isFocusMode, setIsFocusMode] = useState(false);
 
   const [themeName, setThemeName] = useLocalStorage("typeit-theme", "default");
   const [theme, setTheme] = useState<Theme>(
@@ -25,6 +26,7 @@ const Home = () => {
         currentView={currentView}
         onViewChange={setCurrentView}
         theme={theme}
+        isFocusMode={isFocusMode}
       />
 
       <div className="pt-14">
@@ -34,6 +36,7 @@ const Home = () => {
             themeName={themeName}
             setThemeName={setThemeName}
             setTheme={setTheme}
+            setIsFocusMode={setIsFocusMode}
           />
         )}
 

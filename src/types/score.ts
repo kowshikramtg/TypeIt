@@ -13,6 +13,7 @@ export interface Score {
   mode?: "words" | "code" | "daily";
   duration?: number;
   wordCount?: number;
+  effectiveWpm?: number;
 
   createdAt: Timestamp | null;
 }

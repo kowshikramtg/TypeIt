@@ -16,7 +16,7 @@ import type { Score } from "../types/score";
 
 export const subscribeToLeaderboard = (
   callback: (scores: Score[]) => void,
-  sortBy: "bestWpm" | "avgWpm" | "wins" = "bestWpm"
+  sortBy: "bestEffectiveWpm" | "bestWpm" | "avgWpm" | "wins" = "bestEffectiveWpm"
 ) => {
   const q = query(
     collection(db, "leaderboardStats"),
@@ -26,12 +26,20 @@ export const subscribeToLeaderboard = (
 
   return onSnapshot(q, (snapshot) => {
     const scores = snapshot.docs.map(
-      (doc) => ({
-        id: doc.id,
-        ...doc.data(),
-        wpm: doc.data().bestWpm,
-        accuracy: doc.data().avgAccuracy || 100,
-      })
+      (doc) => {
+        const data = doc.data();
+        const acc = data.avgAccuracy || 100;
+        const wpm = data.bestWpm || 0;
+        const fallbackEwpm = Math.round(wpm * (acc / 100));
+        
+        return {
+          id: doc.id,
+          ...data,
+          wpm: wpm,
+          accuracy: acc,
+          effectiveWpm: data.bestEffectiveWpm || fallbackEwpm,
+        };
+      }
     ) as Score[];
 
     callback(scores);
@@ -49,11 +57,21 @@ export const savePlayerStats = async (
   const statRef = doc(db, "leaderboardStats", uid);
   const snapshot = await getDoc(statRef);
 
+  const currentEffectiveWpm = Math.round(wpm * (accuracy / 100));
+
   if (snapshot.exists()) {
     const data = snapshot.data();
     const totalRaces = (data.totalRaces || 0) + 1;
     const wins = (data.wins || 0) + (isWinner ? 1 : 0);
     const bestWpm = Math.max(data.bestWpm || 0, wpm);
+    
+    // Calculate old fallback effective wpm to ensure compatibility
+    const oldFallbackEwpm = Math.round((data.bestWpm || 0) * ((data.avgAccuracy || 100) / 100));
+    const bestEffectiveWpm = Math.max(
+      data.bestEffectiveWpm || oldFallbackEwpm,
+      currentEffectiveWpm
+    );
+
     const avgWpm = Math.round(((data.avgWpm || 0) * (totalRaces - 1) + wpm) / totalRaces);
     const avgAccuracy = Math.round(((data.avgAccuracy || 100) * (totalRaces - 1) + accuracy) / totalRaces);
 
@@ -61,6 +79,7 @@ export const savePlayerStats = async (
       name,
       photoURL,
       bestWpm,
+      bestEffectiveWpm,
       avgWpm,
       avgAccuracy,
       wins,
@@ -73,6 +92,7 @@ export const savePlayerStats = async (
       name,
       photoURL,
       bestWpm: wpm,
+      bestEffectiveWpm: currentEffectiveWpm,
       avgWpm: wpm,
       avgAccuracy: accuracy,
       wins: isWinner ? 1 : 0,

@@ -32,12 +32,18 @@ const LeaderboardRow = ({ score, rank }: Props) => {
       </div>
 
       <div className="flex items-center gap-6">
-        <span className="text-yellow-400">
-          {score.wpm} wpm
+        {score.effectiveWpm !== undefined && (
+          <span className="text-yellow-400 font-bold w-20 text-right">
+            {score.effectiveWpm} <span className="text-sm opacity-80">ewpm</span>
+          </span>
+        )}
+        
+        <span className="text-zinc-500 w-16 text-right">
+          {score.wpm} <span className="text-xs opacity-70">raw</span>
         </span>
 
-        <span className="text-zinc-400">
-          {score.accuracy}%
+        <span className="text-zinc-400 w-16 text-right">
+          {score.accuracy}% <span className="text-xs opacity-70">acc</span>
         </span>
       </div>
     </motion.div>

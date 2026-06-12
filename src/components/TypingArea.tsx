@@ -15,6 +15,8 @@ type TypingAreaProps = {
   containerRef: React.RefObject<HTMLDivElement | null>;
 
   charRefs: React.MutableRefObject<(HTMLSpanElement | null)[]>;
+
+  scrollOffset: number;
 };
 
 const TypingArea = ({
@@ -25,6 +27,7 @@ const TypingArea = ({
   caretPosition,
   containerRef,
   charRefs,
+  scrollOffset,
 }: TypingAreaProps) => {
   return (
     <div
@@ -33,8 +36,7 @@ const TypingArea = ({
         w-full
         max-w-5xl
         h-[340px]
-        overflow-y-auto
-        no-scrollbar
+        overflow-hidden
         relative
       "
     >
@@ -50,7 +52,13 @@ const TypingArea = ({
           whitespace-pre-wrap
           break-words
           select-none
+          transition-transform
+          duration-200
+          ease-out
         "
+        style={{
+          transform: `translateY(-${scrollOffset}px)`,
+        }}
       >
         {!testCompleted && (
           <span

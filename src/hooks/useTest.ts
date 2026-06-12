@@ -35,7 +35,7 @@ const useTest = ({
       return codeSnippets[randomIndex];
     }
 
-    return generateWords(30);
+    return generateWords(400);
   };
 
   const generateDailyChallenge = () => {

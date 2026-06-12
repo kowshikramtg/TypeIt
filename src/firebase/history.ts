@@ -1,8 +1,6 @@
 import {
   collection,
   getDocs,
-  limit,
-  orderBy,
   query,
   where,
 } from "firebase/firestore";
@@ -15,15 +13,22 @@ export const getTypingHistory = async (
 ): Promise<Score[]> => {
   const q = query(
     collection(db, "scores"),
-    where("uid", "==", uid),
-    orderBy("createdAt", "desc"),
-    limit(15)
+    where("uid", "==", uid)
   );
 
   const snapshot = await getDocs(q);
 
-  return snapshot.docs.map((doc) => ({
+  const data = snapshot.docs.map((doc) => ({
     id: doc.id,
     ...doc.data(),
+    createdAt: doc.data().createdAt || null,
   })) as Score[];
+
+  data.sort((a, b) => {
+    const timeA = a.createdAt?.toMillis?.() || 0;
+    const timeB = b.createdAt?.toMillis?.() || 0;
+    return timeB - timeA;
+  });
+
+  return data.slice(0, 15);
 };

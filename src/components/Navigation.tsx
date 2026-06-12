@@ -4,9 +4,10 @@ type NavigationProps = {
   currentView: "typing" | "analytics" | "groupplay";
   onViewChange: (view: "typing" | "analytics" | "groupplay") => void;
   theme: Theme;
+  isFocusMode?: boolean;
 };
 
-const Navigation = ({ currentView, onViewChange, theme }: NavigationProps) => {
+const Navigation = ({ currentView, onViewChange, theme, isFocusMode }: NavigationProps) => {
   const navItems = [
     { id: "typing", label: "Typing Test" },
     { id: "analytics", label: "Analytics" },
@@ -20,7 +21,11 @@ const Navigation = ({ currentView, onViewChange, theme }: NavigationProps) => {
           <h1 className={`text-3xl font-bold ${theme.accent}`}>TypeIt</h1>
         </div>
 
-        <div className="flex-1 flex items-center justify-center gap-8">
+        <div 
+          className={`flex-1 flex items-center justify-center gap-8 transition-opacity duration-300 ${
+            isFocusMode ? "opacity-0 pointer-events-none" : "opacity-100"
+          }`}
+        >
           {navItems.map((item) => {
             const isActive = currentView === item.id;
 

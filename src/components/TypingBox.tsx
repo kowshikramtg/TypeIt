@@ -28,6 +28,7 @@ type TypingBoxProps = {
   themeName: string;
   setThemeName: React.Dispatch<React.SetStateAction<string>>;
   setTheme: React.Dispatch<React.SetStateAction<Theme>>;
+  setIsFocusMode?: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const TypingBox = ({
@@ -35,6 +36,7 @@ const TypingBox = ({
   themeName,
   setThemeName,
   setTheme,
+  setIsFocusMode,
 }: TypingBoxProps) => {
   // WORDS
   const [words, setWords] = useState("");
@@ -135,11 +137,10 @@ const TypingBox = ({
   const currentIndex = input.length;
 
   // CARET
-  const { caretPosition } = useCaret({
+  const { caretPosition, scrollOffset } = useCaret({
     currentIndex,
     words,
     charRefs,
-    containerRef,
   });
 
   // RESTART
@@ -207,6 +208,31 @@ const TypingBox = ({
     queueMicrotask(restartTest);
   }, [dailyMode]);
 
+  // FOCUS MODE LOGIC
+  const [localFocusMode, setLocalFocusMode] = useState(false);
+
+  useEffect(() => {
+    const isFocus = isTyping && !testCompleted;
+    setLocalFocusMode(isFocus);
+    if (setIsFocusMode) setIsFocusMode(isFocus);
+  }, [isTyping, testCompleted, setIsFocusMode]);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (isTyping && !testCompleted) {
+        if (e.clientY < 150) {
+          setLocalFocusMode(false);
+          if (setIsFocusMode) setIsFocusMode(false);
+        } else {
+          setLocalFocusMode(true);
+          if (setIsFocusMode) setIsFocusMode(true);
+        }
+      }
+    };
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, [isTyping, testCompleted, setIsFocusMode]);
+
   // SAVE BEST WPM
   useEffect(() => {
     if (!testCompleted) return;
@@ -257,10 +283,15 @@ const TypingBox = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
     >
-      <AuthButton user={user} />
-      {/* TOP CONTROLS */}
-      <div className="flex w-full flex-col gap-2 mb-3 mt-10">
-        <div className="flex items-center justify-center gap-4">
+      <div
+        className={`transition-opacity duration-300 w-full flex flex-col items-center ${
+          localFocusMode ? "opacity-0 pointer-events-none" : "opacity-100"
+        }`}
+      >
+        <AuthButton user={user} />
+        {/* TOP CONTROLS */}
+        <div className="flex w-full flex-col gap-2 mb-3 mt-10">
+          <div className="flex items-center justify-center gap-4">
           <ThemeSelector
             themeName={themeName}
             setThemeName={setThemeName}
@@ -303,6 +334,7 @@ const TypingBox = ({
           />
         </div>
       </div>
+      </div>
 
       {/* STATS */}
       <div className="mb-2 mt-5">
@@ -323,6 +355,7 @@ const TypingBox = ({
         caretPosition={caretPosition}
         containerRef={containerRef}
         charRefs={charRefs}
+        scrollOffset={scrollOffset}
       />
 
       {/* RESULTS */}

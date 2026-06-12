@@ -8,21 +8,20 @@ type UseCaretProps = {
   charRefs: React.MutableRefObject<
     (HTMLSpanElement | null)[]
   >;
-
-  containerRef: React.RefObject<HTMLDivElement | null>;
 };
 
 const useCaret = ({
   currentIndex,
   words,
   charRefs,
-  containerRef,
 }: UseCaretProps) => {
   const [caretPosition, setCaretPosition] =
     useState({
       top: 0,
       left: 0,
     });
+
+  const [scrollOffset, setScrollOffset] = useState(0);
 
   // CARET POSITION
   useEffect(() => {
@@ -36,31 +35,15 @@ const useCaret = ({
         top: currentChar.offsetTop,
         left: currentChar.offsetLeft,
       });
+      // The container is 340px high. Center is around 150px.
+      // We keep the active line near the center by translating up once it passes the center.
+      setScrollOffset(Math.max(0, currentChar.offsetTop - 150));
     });
   }, [currentIndex, words, charRefs]);
 
-  // AUTO SCROLL
-  useEffect(() => {
-    const currentChar =
-      charRefs.current[currentIndex];
-
-    const container =
-      containerRef.current;
-
-    if (!currentChar || !container)
-      return;
-
-    const scrollPosition =
-      currentChar.offsetTop - 120;
-
-    container.scrollTo({
-      top: scrollPosition,
-      behavior: "smooth",
-    });
-  }, [currentIndex, charRefs, containerRef]);
-
   return {
     caretPosition,
+    scrollOffset,
   };
 };
 

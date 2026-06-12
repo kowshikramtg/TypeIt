@@ -5,6 +5,7 @@ import {
 } from "firebase/firestore";
 
 import db from "./db";
+import { savePlayerStats } from "./leaderboard";
 
 type SaveScoreProps = {
   uid: string;
@@ -52,6 +53,15 @@ const saveScore = async ({
         createdAt:
           serverTimestamp(),
       }
+    );
+
+    await savePlayerStats(
+      uid,
+      name,
+      photoURL,
+      wpm,
+      accuracy,
+      false
     );
   } catch (error) {
     console.error(

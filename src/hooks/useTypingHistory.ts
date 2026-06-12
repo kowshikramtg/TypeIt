@@ -6,18 +6,19 @@ import {
   collection,
   query,
   where,
-  orderBy,
   onSnapshot,
 } from "firebase/firestore";
 import { db } from "../firebase/config";
 
 const useTypingHistory = () => {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
 
   const [history, setHistory] = useState<Score[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (authLoading) return;
+
     if (!user) {
       queueMicrotask(() => {
         setHistory([]);
@@ -28,8 +29,7 @@ const useTypingHistory = () => {
 
     const q = query(
       collection(db, "scores"),
-      where("uid", "==", user.uid),
-      orderBy("createdAt", "desc")
+      where("uid", "==", user.uid)
     );
 
     const unsubscribe = onSnapshot(
@@ -40,6 +40,14 @@ const useTypingHistory = () => {
           ...doc.data(),
           createdAt: doc.data().createdAt || null,
         })) as Score[];
+        
+        // Sort locally since we removed orderBy to avoid missing composite index
+        data.sort((a, b) => {
+          const timeA = a.createdAt?.toMillis?.() || 0;
+          const timeB = b.createdAt?.toMillis?.() || 0;
+          return timeB - timeA;
+        });
+
         setHistory(data);
         setLoading(false);
       },
@@ -50,7 +58,7 @@ const useTypingHistory = () => {
     );
 
     return () => unsubscribe();
-  }, [user]);
+  }, [user, authLoading]);
 
   return {
     history,
