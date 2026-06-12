@@ -2,7 +2,10 @@ import { useMemo } from "react";
 
 import useTypingHistory from "./useTypingHistory";
 
-import { formatAnalyticsData } from "../utils/analytics";
+import {
+  formatAnalyticsData,
+  formatAnalyticsOverview,
+} from "../utils/analytics";
 
 const useAnalytics = () => {
   const { history, loading } =
@@ -12,9 +15,15 @@ const useAnalytics = () => {
     return formatAnalyticsData(history);
   }, [history]);
 
+  const summary = useMemo(() => {
+    return formatAnalyticsOverview(history);
+  }, [history]);
+
   return {
+    history,
     data,
     loading,
+    summary,
   };
 };
 

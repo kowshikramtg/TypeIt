@@ -38,7 +38,10 @@ const useMultiplayerProgress = ({
       updatePlayerProgress(
         roomId,
         user.uid,
-        progress
+        progress,
+        0, // wpm
+        0, // accuracy
+        0  // mistakes
       );
     }, 300);
 

@@ -1,7 +1,4 @@
-import {
-  signInWithGoogle,
-  logout,
-} from "../firebase/auth";
+import { signInWithGoogle, logout } from "../firebase/auth";
 
 import type { User } from "firebase/auth";
 
@@ -9,11 +6,9 @@ type AuthButtonProps = {
   user: User | null;
 };
 
-const AuthButton = ({
-  user,
-}: AuthButtonProps) => {
+const AuthButton = ({ user }: AuthButtonProps) => {
   return (
-    <div className="absolute top-8 right-8">
+    <div className="absolute top-16 right-6 z-40">
       {!user ? (
         <button
           onClick={signInWithGoogle}
@@ -36,10 +31,7 @@ const AuthButton = ({
       ) : (
         <div className="flex items-center gap-4">
           <img
-            src={
-              user.photoURL ||
-              undefined
-            }
+            src={user.photoURL || undefined}
             alt="profile"
             className="
               w-10

@@ -55,9 +55,9 @@ const useRoom = (roomId: string) => {
 
     if (room.status !== "countdown") return;
 
-    if (room.countdown === null || room.countdown <= 0) return;
+    if (room.countdownValue === undefined || room.countdownValue === null || room.countdownValue <= 0) return;
 
-    const countdown = room.countdown;
+    const countdown = room.countdownValue;
 
     const timer = setTimeout(async () => {
       const roomRef = doc(
@@ -66,7 +66,7 @@ const useRoom = (roomId: string) => {
       );
 
       await updateDoc(roomRef, {
-        countdown: countdown - 1,
+        countdownValue: countdown - 1,
         status:
           countdown - 1 <= 0
             ? "running"

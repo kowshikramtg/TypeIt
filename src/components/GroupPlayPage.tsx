@@ -1,106 +1,116 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import CreateRoom from "./multiplayer/CreateRoom";
 import JoinRoom from "./multiplayer/JoinRoom";
 import RoomLobby from "./multiplayer/RoomLobby";
+import Race from "./multiplayer/Race";
+import Results from "./multiplayer/Results";
 import Leaderboard from "./Leaderboard";
+import type { Theme } from "../types/theme";
 
-const GroupPlayPage = () => {
+type Props = {
+  theme: Theme;
+};
+
+const GroupPlayPage = ({ theme }: Props) => {
   const [roomId, setRoomId] = useState("");
+  const [stage, setStage] = useState<"select" | "lobby" | "race" | "results">("select");
+
+  useEffect(() => {
+    if (roomId && stage === "select") {
+      setStage("lobby");
+    }
+  }, [roomId, stage]);
+
+  const handleRaceStart = () => {
+    setStage("race");
+  };
+
+  const handleRaceEnd = () => {
+    setStage("results");
+  };
+
+  const handleLeave = () => {
+    setRoomId("");
+    setStage("select");
+  };
 
   return (
     <motion.div
-      className="min-h-screen bg-zinc-950 pt-24 px-6 pb-10"
+      className={`min-h-screen pt-24 px-6 pb-10 ${theme.background}`}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <div className="max-w-7xl mx-auto">
-        <h1 className="text-4xl font-bold text-zinc-100 mb-2">Group Play</h1>
-        <p className="text-zinc-400 mb-10">
-          Compete with others in real-time typing races
-        </p>
+      <div className="max-w-6xl mx-auto">
+        <div className="mb-10">
+          <h1 className={`text-4xl font-bold mb-2 ${theme.text}`}>Group Play</h1>
+          <p className={`${theme.sub}`}>Compete with others in real-time typing races</p>
+        </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Multiplayer Section */}
+        {stage === "select" && (
           <motion.div
-            className="lg:col-span-2 space-y-6"
+            className="grid grid-cols-1 lg:grid-cols-2 gap-8"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.3, delay: 0.1 }}
+            transition={{ duration: 0.3 }}
           >
-            {!roomId ? (
-              <div className="space-y-4">
-                <div className="bg-white/5 rounded-2xl p-8 backdrop-blur-md border border-zinc-800">
-                  <h2 className="text-2xl font-semibold text-zinc-100 mb-6">
-                    Start or Join a Race
-                  </h2>
-
-                  <div className="space-y-4">
-                    <CreateRoom setRoomId={setRoomId} />
-                    <JoinRoom setRoomId={setRoomId} />
-                  </div>
-                </div>
-
-                <div className="bg-white/5 rounded-2xl p-8 backdrop-blur-md border border-zinc-800">
-                  <h3 className="text-lg font-semibold text-zinc-100 mb-4">
-                    How to Play
-                  </h3>
-                  <ul className="space-y-2 text-zinc-300 text-sm">
-                    <li className="flex gap-3">
-                      <span className="text-purple-400 font-bold">1.</span>
-                      <span>
-                        Create a new race room or join an existing one
-                      </span>
-                    </li>
-                    <li className="flex gap-3">
-                      <span className="text-purple-400 font-bold">2.</span>
-                      <span>Invite friends by sharing the room code</span>
-                    </li>
-                    <li className="flex gap-3">
-                      <span className="text-purple-400 font-bold">3.</span>
-                      <span>Wait for all players to be ready</span>
-                    </li>
-                    <li className="flex gap-3">
-                      <span className="text-purple-400 font-bold">4.</span>
-                      <span>Type as fast as you can to win the race</span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            ) : (
-              <motion.div
-                className="bg-white/5 rounded-2xl p-8 backdrop-blur-md border border-zinc-800"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.3 }}
-              >
-                <RoomLobby roomId={roomId} />
-                <button
-                  onClick={() => setRoomId("")}
-                  className="mt-6 px-4 py-2 bg-zinc-800 text-zinc-300 rounded-lg hover:bg-zinc-700 transition-all"
-                >
-                  Exit Room
-                </button>
-              </motion.div>
-            )}
+            <CreateRoom setRoomId={setRoomId} theme={theme} />
+            <JoinRoom setRoomId={setRoomId} theme={theme} />
           </motion.div>
+        )}
 
-          {/* Leaderboard Section */}
+        {stage === "lobby" && roomId && (
           <motion.div
-            className="bg-white/5 rounded-2xl p-8 backdrop-blur-md border border-zinc-800 h-fit"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.3, delay: 0.2 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
           >
-            <h2 className="text-2xl font-semibold text-zinc-100 mb-6">
-              Global Leaderboard
-            </h2>
-            <div className="max-h-96 overflow-y-auto">
-              <Leaderboard />
-            </div>
+            <RoomLobby
+              roomId={roomId}
+              onRaceStart={handleRaceStart}
+              onLeave={handleLeave}
+              theme={theme}
+            />
           </motion.div>
-        </div>
+        )}
+
+        {stage === "race" && roomId && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <Race
+              roomId={roomId}
+              onRaceEnd={handleRaceEnd}
+              theme={theme}
+            />
+          </motion.div>
+        )}
+
+        {stage === "results" && roomId && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <Results
+              roomId={roomId}
+              onLeave={handleLeave}
+              theme={theme}
+            />
+          </motion.div>
+        )}
+
+        {/* Leaderboards Section */}
+        {stage === "select" && (
+          <motion.div
+            className="mt-16"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <Leaderboard />
+          </motion.div>
+        )}
       </div>
     </motion.div>
   );

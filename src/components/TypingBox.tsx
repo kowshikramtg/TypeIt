@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { motion } from "framer-motion";
 
-import themes from "../data/theme";
 import type { Theme } from "../types/theme";
 
 import ThemeSelector from "./ThemeSelector";
@@ -24,14 +23,19 @@ import AuthButton from "./AuthButton";
 import useAuth from "../hooks/useAuth";
 import saveScore from "../firebase/saveScore";
 
-const TypingBox = () => {
-  // THEME
-  const [themeName, setThemeName] = useLocalStorage("typeit-theme", "default");
+type TypingBoxProps = {
+  theme: Theme;
+  themeName: string;
+  setThemeName: React.Dispatch<React.SetStateAction<string>>;
+  setTheme: React.Dispatch<React.SetStateAction<Theme>>;
+};
 
-  const [theme, setTheme] = useState<Theme>(
-    themes[themeName as keyof typeof themes],
-  );
-
+const TypingBox = ({
+  theme,
+  themeName,
+  setThemeName,
+  setTheme,
+}: TypingBoxProps) => {
   // WORDS
   const [words, setWords] = useState("");
 
@@ -48,6 +52,7 @@ const TypingBox = () => {
 
   const [isCustomInputFocused, setIsCustomInputFocused] = useState(false);
 
+  // CUSTOM TEXT BOX
   const [showCustomTextBox, setShowCustomTextBox] = useState(false);
 
   // MODE
@@ -219,6 +224,9 @@ const TypingBox = () => {
           wpm,
           accuracy,
           mistakes,
+          mode: dailyMode ? "daily" : mode,
+          duration: testTime,
+          wordCount: words.trim().split(/\s+/).filter(Boolean).length,
         });
       }
     });
@@ -227,17 +235,18 @@ const TypingBox = () => {
   return (
     <motion.div
       className={`
-        w-screen
+        w-full
+        max-w-full
         min-h-screen
         ${theme.background}
         ${theme.text}
-        overflow-hidden
+        overflow-x-hidden
         flex
         flex-col
         items-center
         px-6
-        pt-20
-        pb-20
+        pt-2
+        pb-10
       `}
       onClick={() => {
         if (!isCustomInputFocused) {
@@ -250,54 +259,60 @@ const TypingBox = () => {
     >
       <AuthButton user={user} />
       {/* TOP CONTROLS */}
-      <div className="flex flex-row gap-20 items-center mb-6">
-        <ThemeSelector
-          themeName={themeName}
-          setThemeName={setThemeName}
-          setTheme={setTheme}
-        />
+      <div className="flex w-full flex-col gap-2 mb-3 mt-10">
+        <div className="flex items-center justify-center gap-4">
+          <ThemeSelector
+            themeName={themeName}
+            setThemeName={setThemeName}
+            setTheme={setTheme}
+          />
 
-        <TimerSelector
-          testTime={testTime}
-          onTimeSelect={handleTimeSelection}
-          isTyping={isTyping}
-          theme={theme}
-        />
+          <TimerSelector
+            testTime={testTime}
+            onTimeSelect={handleTimeSelection}
+            isTyping={isTyping}
+            theme={theme}
+          />
 
-        <ModeSelector mode={mode} setMode={setMode} theme={theme} />
+          <ModeSelector mode={mode} setMode={setMode} theme={theme} />
 
-        <DailyChallenge
-          dailyMode={dailyMode}
-          setDailyMode={setDailyMode}
-          theme={theme}
-        />
+          <DailyChallenge
+            dailyMode={dailyMode}
+            setDailyMode={setDailyMode}
+            theme={theme}
+          />
+          {/* </div>
 
-        <CustomTextBox
-          showCustomTextBox={showCustomTextBox}
-          setShowCustomTextBox={setShowCustomTextBox}
-          customText={customText}
-          setCustomText={setCustomText}
-          setIsCustomInputFocused={setIsCustomInputFocused}
-          setInput={setInput}
-          setIsTyping={setIsTyping}
-          setTimeLeft={setTimeLeft}
-          setTestCompleted={setTestCompleted}
-          setMistakes={setMistakes}
-          setWords={setWords}
-          setUseCustomText={setUseCustomText}
-          testTime={testTime}
-          inputRef={inputRef}
-          theme={theme}
-        />
+        <div className="w-full max-w-sm mx-auto"> */}
+          <CustomTextBox
+            showCustomTextBox={showCustomTextBox}
+            setShowCustomTextBox={setShowCustomTextBox}
+            customText={customText}
+            setCustomText={setCustomText}
+            setIsCustomInputFocused={setIsCustomInputFocused}
+            setInput={setInput}
+            setIsTyping={setIsTyping}
+            setTimeLeft={setTimeLeft}
+            setTestCompleted={setTestCompleted}
+            setMistakes={setMistakes}
+            setWords={setWords}
+            setUseCustomText={setUseCustomText}
+            testTime={testTime}
+            inputRef={inputRef}
+            theme={theme}
+          />
+        </div>
       </div>
 
       {/* STATS */}
-      <StatsHeader
-        timeLeft={timeLeft}
-        bestWpm={bestWpm}
-        mode={mode}
-        theme={theme}
-      />
+      <div className="mb-2 mt-5">
+        <StatsHeader
+          timeLeft={timeLeft}
+          bestWpm={bestWpm}
+          mode={mode}
+          theme={theme}
+        />
+      </div>
 
       {/* TYPING AREA */}
       <TypingArea
@@ -322,7 +337,7 @@ const TypingBox = () => {
 
       {/* MESSAGE */}
       {testCompleted && (
-        <p className="mt-8 text-gray-500 font-mono">
+        <p className={`mt-1 ${theme.sub} font-mono`}>
           {wpm > 80
             ? "insane speed ⚡"
             : wpm > 40
@@ -333,7 +348,7 @@ const TypingBox = () => {
 
       {/* RESTART */}
       {testCompleted && (
-        <p className="text-gray-600 mt-8 font-mono text-base tracking-wide">
+        <p className={`mt-2 ${theme.sub} font-mono text-base tracking-wide`}>
           press TAB to restart
         </p>
       )}

@@ -16,22 +16,24 @@ const DailyChallenge = ({
   const { challenge, loading } = useDailyChallenge();
 
   if (loading) {
-    return <div className="text-zinc-500">Loading challenge...</div>;
+    return <div className={theme.sub}>Loading challenge...</div>;
   }
 
   return (
-    <div className="flex flex-col items-center gap-4">
+    <div className="flex items-center gap-2">
       <button
         onClick={() => {
           setDailyMode((prev) => !prev);
         }}
         className={`
-          transition-colors
+          transition-all
           duration-200
-          cursor-pointer
-          font-mono
-          text-lg
-          ${dailyMode ? theme.accent : "text-gray-600"}
+          rounded-full
+          px-4
+          py-2
+          font-semibold
+          ${dailyMode ? `${theme.active} ${theme.accent}` : theme.sub}
+          hover:brightness-110
         `}
       >
         daily
@@ -39,15 +41,9 @@ const DailyChallenge = ({
 
       {dailyMode && (
         <div
-          className={`
-            font-mono
-            text-sm
-            tracking-widest
-            uppercase
-            ${theme.accent}
-          `}
+          className={`font-mono text-xs tracking-widest uppercase ${theme.accent}`}
         >
-          daily challenge: {challenge?.text}
+          {challenge?.text}
         </div>
       )}
     </div>

@@ -10,6 +10,9 @@ export interface Score {
   wpm: number;
   accuracy: number;
   mistakes: number;
+  mode?: "words" | "code" | "daily";
+  duration?: number;
+  wordCount?: number;
 
   createdAt: Timestamp | null;
 }

@@ -32,8 +32,9 @@ const TypingArea = ({
       className="
         w-full
         max-w-5xl
-        h-[260px]
-        overflow-hidden
+        h-[340px]
+        overflow-y-auto
+        no-scrollbar
         relative
       "
     >

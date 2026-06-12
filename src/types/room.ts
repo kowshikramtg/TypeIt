@@ -6,20 +6,34 @@ export interface RoomPlayer {
   name: string;
   photoURL: string;
   progress?: number;
+  wpm?: number;
+  accuracy?: number;
+  mistakes?: number;
+  finishTime?: number;
+  isReady?: boolean;
 }
 
 export interface Room {
   id: string;
-
+  code: string;
   hostId: string;
-
+  name: string;
+  
+  // Settings
+  duration: 15 | 30 | 60 | 120;
+  mode: "words" | "code" | "custom";
+  isPublic: boolean;
+  
+  // Players
   players: RoomPlayer[];
-
-  createdAt: Timestamp | null | ReturnType<typeof serverTimestamp>;
-
+  
+  // Race
   raceText: string;
-
-  countdown: number | null;
-
   status: "waiting" | "countdown" | "running" | "finished";
+  countdownValue?: number;
+  startedAt?: Timestamp | number;
+  
+  // Meta
+  createdAt: Timestamp | null | ReturnType<typeof serverTimestamp>;
+  updatedAt: Timestamp | null | ReturnType<typeof serverTimestamp>;
 }

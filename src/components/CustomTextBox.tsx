@@ -49,108 +49,104 @@ const CustomTextBox = ({
   inputRef,
   theme,
 }: CustomTextBoxProps) => {
-  return (
-    <div className="absolute top-20 right-20">
-      {!showCustomTextBox ? (
-        <button
-          onClick={() => setShowCustomTextBox(true)}
-          className="
-            px-5
-            py-2
-            rounded-lg
+  if (showCustomTextBox) {
+    return (
+      <div className="w-full max-w-sm mx-auto mt-4">
+        <textarea
+          value={customText}
+          onChange={(e) => setCustomText(e.target.value)}
+          onFocus={() => setIsCustomInputFocused(true)}
+          onBlur={() => setIsCustomInputFocused(false)}
+          placeholder="paste your custom text or code here..."
+          className={`
+            w-full
+            h-32
+            p-4
+            rounded-2xl
+            resize-none
+            outline-none
             font-mono
+            text-sm
+            bg-white/5
             border
             border-white/10
-            text-gray-400
-            transition-all
-            cursor-pointer
-          "
-        >
-          custom text
-        </button>
-      ) : (
-        <div className="w-[350px]">
-          <textarea
-            value={customText}
-            onChange={(e) => setCustomText(e.target.value)}
-            onFocus={() => setIsCustomInputFocused(true)}
-            onBlur={() => setIsCustomInputFocused(false)}
-            placeholder="paste your custom text or code here..."
+            ${theme.text}
+          `}
+        />
+
+        <div className="flex gap-3 mt-3">
+          <button
+            onClick={() => {
+              setInput("");
+              setIsTyping(false);
+              setTimeLeft(testTime);
+              setTestCompleted(false);
+              setMistakes(0);
+
+              setWords(customText);
+
+              setUseCustomText(true);
+
+              inputRef.current?.focus();
+            }}
             className={`
-              w-full
-              h-32
-              p-4
-              rounded-xl
-              resize-none
-              outline-none
+              px-4
+              py-2
+              rounded-lg
               font-mono
-              text-sm
-              bg-black/20
               border
               border-white/10
-              backdrop-blur
-              ${theme.text}
+              cursor-pointer
+              ${theme.accent}
             `}
-          />
+          >
+            start
+          </button>
 
-          <div className="flex gap-3 mt-4">
-            <button
-              onClick={() => {
-                setInput("");
-                setIsTyping(false);
-                setTimeLeft(testTime);
-                setTestCompleted(false);
-                setMistakes(0);
-
-                setWords(customText);
-
-                setUseCustomText(true);
-
-                inputRef.current?.focus();
-              }}
-              className={`
-                px-4
-                py-2
-                rounded-lg
-                font-mono
-                border
-                border-white/10
-                cursor-pointer
-                ${theme.accent}
-              `}
-            >
-              apply
-            </button>
-
-            <button
-              onClick={() => {
-                setUseCustomText(false);
-
-                setInput("");
-                setIsTyping(false);
-                setTimeLeft(testTime);
-                setTestCompleted(false);
-                setMistakes(0);
-
-                setShowCustomTextBox(false);
-              }}
-              className="
-                px-4
-                py-2
-                rounded-lg
-                font-mono
-                text-gray-500
-                border
-                border-white/10
-                cursor-pointer
-              "
-            >
-              close
-            </button>
-          </div>
+          <button
+            onClick={() => {
+              setShowCustomTextBox(false);
+              setCustomText("");
+              setUseCustomText(false);
+            }}
+            className={`
+              px-4
+              py-2
+              rounded-lg
+              font-mono
+              border
+              border-white/10
+              cursor-pointer
+              ${theme.sub}
+              hover:brightness-110
+            `}
+          >
+            cancel
+          </button>
         </div>
-      )}
-    </div>
+      </div>
+    );
+  }
+
+  return (
+    <button
+      onClick={() => setShowCustomTextBox(true)}
+      className={`
+        px-3
+        py-2
+        rounded-lg
+        font-mono
+        text-sm
+        border
+        border-white/10
+        transition-all
+        whitespace-nowrap
+        ${theme.sub}
+        hover:brightness-110
+      `}
+    >
+      custom
+    </button>
   );
 };
 

@@ -10,30 +10,25 @@ type ModeSelectorProps = {
 
 const ModeSelector = ({ mode, setMode, theme }: ModeSelectorProps) => {
   return (
-    <div className="flex gap-6 mb-10 font-mono text-lg">
-      <button
-        onClick={() => setMode("words")}
-        className={`
-          transition-colors
-          duration-200
-          cursor-pointer
-          ${mode === "words" ? theme.accent : "text-gray-600"}
-        `}
-      >
-        words
-      </button>
-
-      <button
-        onClick={() => setMode("code")}
-        className={`
-          transition-colors
-          duration-200
-          cursor-pointer
-          ${mode === "code" ? theme.accent : "text-gray-600"}
-        `}
-      >
-        code
-      </button>
+    <div className="flex gap-2 text-sm">
+      {(["words", "code"] as const).map((item) => (
+        <button
+          key={item}
+          onClick={() => setMode(item)}
+          className={`
+            transition-all
+            duration-200
+            rounded-full
+            px-4
+            py-2
+            font-semibold
+            ${mode === item ? `${theme.active} ${theme.accent}` : theme.sub}
+            hover:brightness-110
+          `}
+        >
+          {item}
+        </button>
+      ))}
     </div>
   );
 };

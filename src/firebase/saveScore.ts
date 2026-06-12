@@ -18,6 +18,9 @@ type SaveScoreProps = {
   accuracy: number;
 
   mistakes: number;
+  mode?: "words" | "code" | "daily";
+  duration?: number;
+  wordCount?: number;
 };
 
 const saveScore = async ({
@@ -27,6 +30,9 @@ const saveScore = async ({
   wpm,
   accuracy,
   mistakes,
+  mode,
+  duration,
+  wordCount,
 }: SaveScoreProps) => {
   try {
     await addDoc(
@@ -39,6 +45,9 @@ const saveScore = async ({
         wpm,
         accuracy,
         mistakes,
+        mode,
+        duration,
+        wordCount,
 
         createdAt:
           serverTimestamp(),

@@ -1,15 +1,17 @@
 import words from "../data/words"
 
 const generateWords = (count: number) => {
-  const result: string[] = []
+  const paragraph = words[Math.floor(Math.random() * words.length)]
+  const parts = paragraph.split(/\s+/).filter(Boolean)
 
-  for (let i = 0; i < count; i++) {
-    const randomIndex = Math.floor(Math.random() * words.length)
-
-    result.push(words[randomIndex])
+  if (parts.length <= count) {
+    return paragraph
   }
 
-  return result.join(" ")
+  const maxStart = parts.length - count
+  const start = Math.floor(Math.random() * (maxStart + 1))
+
+  return parts.slice(start, start + count).join(" ")
 }
 
 export default generateWords

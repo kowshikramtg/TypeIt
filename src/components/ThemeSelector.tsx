@@ -9,40 +9,13 @@ type ThemeSelectorProps = {
 };
 
 const themeButtons = [
-  {
-    name: "default",
-    color: "bg-yellow-400",
-  },
-
-  {
-    name: "ocean",
-    color: "bg-cyan-400",
-  },
-
-  {
-    name: "forest",
-    color: "bg-green-400",
-  },
-
-  {
-    name: "dracula",
-    color: "bg-purple-400",
-  },
-
-  {
-    name: "tokyo",
-    color: "bg-blue-500",
-  },
-
-  {
-    name: "gruvbox",
-    color: "bg-yellow-600",
-  },
-
-  {
-    name: "catppuccin",
-    color: "bg-pink-300",
-  },
+  { name: "default" },
+  { name: "ocean" },
+  { name: "forest" },
+  { name: "dracula" },
+  { name: "tokyo" },
+  { name: "gruvbox" },
+  { name: "catppuccin" },
 ];
 
 const ThemeSelector = ({
@@ -51,27 +24,34 @@ const ThemeSelector = ({
   setTheme,
 }: ThemeSelectorProps) => {
   return (
-    <div className="flex gap-4 mb-10">
-      {themeButtons.map((themeItem) => (
-        <button
-          key={themeItem.name}
-          onClick={() => {
-            setTheme(themes[themeItem.name as keyof typeof themes]);
-
-            setThemeName(themeItem.name);
-          }}
-          className={`
-            w-5
-            h-5
-            rounded-full
-            cursor-pointer
-            transition-all
-            duration-200
-            ${themeItem.color}
-            ${themeName === themeItem.name ? "scale-125" : "opacity-70"}
-          `}
-        />
-      ))}
+    <div className="flex gap-3 items-center">
+      {themeButtons.map((themeItem) => {
+        const themeColors = themes[themeItem.name as keyof typeof themes];
+        return (
+          <button
+            key={themeItem.name}
+            onClick={() => {
+              setTheme(themeColors);
+              setThemeName(themeItem.name);
+            }}
+            className={`
+              w-8
+              h-8
+              rounded-full
+              transition-all
+              duration-200
+              flex-shrink-0
+              ${themeColors.accent.replace("text-", "bg-")}
+              ${
+                themeName === themeItem.name
+                  ? "scale-110 ring-2 ring-white/40"
+                  : "opacity-60 hover:opacity-100"
+              }
+            `}
+            title={themeItem.name}
+          />
+        );
+      })}
     </div>
   );
 };

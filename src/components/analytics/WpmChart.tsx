@@ -8,9 +8,10 @@ type ChartData = {
 
 type Props = {
   data: ChartData[];
+  accent?: string;
 };
 
-const WpmChart = ({ data }: Props) => {
+const WpmChart = ({ data, accent = "#f5c2e7" }: Props) => {
   return (
     <div className="h-64 w-full">
       <ResponsiveContainer width="100%" height="100%">
@@ -19,12 +20,7 @@ const WpmChart = ({ data }: Props) => {
 
           <Tooltip />
 
-          <Line
-            type="monotone"
-            dataKey="wpm"
-            stroke="#eab308"
-            strokeWidth={3}
-          />
+          <Line type="monotone" dataKey="wpm" stroke={accent} strokeWidth={3} />
         </LineChart>
       </ResponsiveContainer>
     </div>

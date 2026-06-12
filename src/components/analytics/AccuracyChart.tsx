@@ -8,9 +8,10 @@ type ChartData = {
 
 type Props = {
   data: ChartData[];
+  accent?: string;
 };
 
-const AccuracyChart = ({ data }: Props) => {
+const AccuracyChart = ({ data, accent = "#f5c2e7" }: Props) => {
   return (
     <div className="h-64 w-full">
       <ResponsiveContainer width="100%" height="100%">
@@ -22,7 +23,7 @@ const AccuracyChart = ({ data }: Props) => {
           <Line
             type="monotone"
             dataKey="accuracy"
-            stroke="#06b6d4"
+            stroke={accent}
             strokeWidth={3}
           />
         </LineChart>

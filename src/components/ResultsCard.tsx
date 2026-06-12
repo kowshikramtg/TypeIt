@@ -13,37 +13,33 @@ const ResultsCard = ({ wpm, accuracy, mistakes, theme }: ResultsCardProps) => {
       className="
         w-full
         max-w-5xl
-        mt-24
-        p-10
+        mt-4
+        p-8
         rounded-2xl
         backdrop-blur
         flex
-        gap-20
+        gap-10
         font-mono
+        text-center
       "
     >
-      <div>
-        <p className="text-gray-500 text-sm mb-1 uppercase tracking-widest">
+      <div className="flex-1">
+        <p className={`${theme.sub} text-xs mb-1 uppercase tracking-widest`}>
           WPM
         </p>
-
-        <h2 className={`text-7xl font-bold ${theme.accent}`}>{wpm}</h2>
+        <h2 className={`text-5xl font-bold ${theme.accent}`}>{wpm}</h2>
       </div>
-
-      <div>
-        <p className="text-gray-500 text-sm mb-1 uppercase tracking-widest">
+      <div className="flex-1">
+        <p className={`${theme.sub} text-xs mb-1 uppercase tracking-widest`}>
           Accuracy
         </p>
-
-        <h2 className={`text-7xl font-bold ${theme.accent}`}>{accuracy}%</h2>
+        <h2 className={`text-5xl font-bold ${theme.accent}`}>{accuracy}%</h2>
       </div>
-
-      <div>
-        <p className="text-gray-500 text-sm mb-1 uppercase tracking-widest">
+      <div className="flex-1">
+        <p className={`${theme.sub} text-xs mb-1 uppercase tracking-widest`}>
           Mistakes
         </p>
-
-        <h2 className={`text-7xl font-bold ${theme.accent}`}>{mistakes}</h2>
+        <h2 className={`text-5xl font-bold ${theme.accent}`}>{mistakes}</h2>
       </div>
     </div>
   );
